@@ -1,0 +1,7 @@
+{
+  "name": "mozartTest",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
