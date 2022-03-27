@@ -11,6 +11,10 @@ const routes: Routes = [
   {
     path: 'profile',
     loadChildren: () => import('./profile/profile.module').then( m => m.ProfilePageModule)
+  },
+  {
+    path: 'add-connection-modal',
+    loadChildren: () => import('./add-connection-modal/add-connection-modal.module').then( m => m.AddConnectionModalPageModule)
   }
 ];
 

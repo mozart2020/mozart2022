@@ -39,7 +39,7 @@ export class LoginPage implements OnInit {
     this.router.navigateByUrl('/home/content', { replaceUrl: true });
   }
 
-  async registerNewUser() {
+  async register() {
     const user = await this.authService.register(this.credentials.value);
     if (user) {
       this.router.navigateByUrl('/home/content', { replaceUrl: true });

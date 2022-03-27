@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 
@@ -7,12 +7,21 @@ import { AuthService } from '../services/auth.service';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
+  receivedRequestId = '';
 
   constructor(
     private alertCtrl: AlertController,
     private authService: AuthService
     ) {}
+
+    ngOnInit(): void {
+      this.authService.getCurrentUser().subscribe(res => {
+        if(res.receivedConnectionRequests != undefined) {
+          this.receivedRequestId = res.receivedConnectionRequests;
+        }
+      });
+    }
   
     async confirmLogout() {
       const alert = await this.alertCtrl.create({

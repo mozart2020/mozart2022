@@ -68,9 +68,11 @@ export class AuthService {
         email,
         password
       );
+      const profileImage = '';
       const userDoc = doc(this.firestore, `users/${(await credentials).user.uid}`);
       await setDoc(userDoc, { 
-        email
+        email,
+        profileImage
       });
       return credentials;
     } catch (err) {
