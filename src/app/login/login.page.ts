@@ -34,14 +34,15 @@ export class LoginPage implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
+  async googleSignIn() {
+    await this.authService.googleSignIn();
+    this.router.navigateByUrl('/home/content', { replaceUrl: true });
+  }
 
-  async register() {
-    const loading = await this.loadingController.create();
-    await loading.present(); 
+  async registerNewUser() {
     const user = await this.authService.register(this.credentials.value);
-    await loading.dismiss(); 
     if (user) {
-      this.router.navigateByUrl('/home', { replaceUrl: true });
+      this.router.navigateByUrl('/home/content', { replaceUrl: true });
     } else {
       this.showAlert('Registration failed', 'Please try again!');
     }
@@ -53,7 +54,7 @@ export class LoginPage implements OnInit {
     const user = await this.authService.login(this.credentials.value);
     await loading.dismiss(); 
     if (user) {
-      this.router.navigateByUrl('/home', { replaceUrl: true });
+      this.router.navigateByUrl('/home/content', { replaceUrl: true });
     } else {
       this.showAlert('Login failed', 'Please try again!');
     }

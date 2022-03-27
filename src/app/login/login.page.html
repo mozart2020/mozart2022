@@ -1,21 +1,55 @@
 <ion-header>
-  <ion-toolbar color="primary">
+  <ion-toolbar color="light">
     <ion-title>Mozart Gives</ion-title>
+    <ion-thumbnail slot="end">
+      <img src="../../assets/icon/icon.png">
+    </ion-thumbnail>
   </ion-toolbar>
 </ion-header>
  
 <ion-content class="ion-padding">
-  <form (ngSubmit)="login()" [formGroup]="credentials">
-    <ion-item fill="solid" class="ion-margin-bottom">
-      <ion-input type="email" placeholder="Email" formControlName="email"></ion-input>
-      <ion-note slot="error" *ngIf="(email.dirty || email.touched) && email.errors">Email is invalid</ion-note>
-    </ion-item>
-    <ion-item fill="solid" class="ion-margin-bottom">
-      <ion-input type="password" placeholder="Password" formControlName="password"></ion-input>
-      <ion-note slot="error" *ngIf="(password.dirty || password.touched) && password.errors">Password needs to be 6 characters</ion-note>
-    </ion-item>
- 
-    <ion-button type="submit" expand="block" [disabled]="!credentials.valid">Log in</ion-button>
-    <ion-button type="button" expand="block" color="secondary" (click)="register()">Create account</ion-button>
-  </form>
+  <ion-button expand="block" color="secondary" (click)="googleSignIn()">
+    <ion-icon name="logo-google" slot="start"></ion-icon>
+    Sign in with Google
+  </ion-button>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Login or register new user:</ion-card-subtitle>
+    </ion-card-header>
+    <form (ngSubmit)="login()" [formGroup]="credentials">
+      <ion-item fill="solid" class="ion-margin-bottom">
+        <ion-input type="email" placeholder="Email" formControlName="email"></ion-input>
+        <ion-note slot="error" *ngIf="(email.dirty || email.touched) && email.errors">Email is invalid</ion-note>
+      </ion-item>
+      <ion-item fill="solid" class="ion-margin-bottom">
+        <ion-input type="password" placeholder="Password" formControlName="password"></ion-input>
+        <ion-note slot="error" *ngIf="(password.dirty || password.touched) && password.errors">Password needs to be 6 characters</ion-note>
+      </ion-item> 
+      <section>
+       
+      
+      </section>
+      <ion-row>
+        <ion-col>
+          <ion-button 
+            type="submit"
+            class="ion-margin"
+            expand="block"
+            color="secondary"
+            [disabled]="!credentials.valid">Log in
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button
+            type="button"
+            class="ion-margin"
+            expand="block"
+            color="secondary"
+            [disabled]="!credentials.valid"
+            (click)="register()">Register
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </form>
+  </ion-card>    
 </ion-content>

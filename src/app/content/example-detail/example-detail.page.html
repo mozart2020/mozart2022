@@ -1,0 +1,190 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home/content"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Example video</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<!--student video:-->
+<video
+#studentVideo
+src="https://video.mozart.gives/student.mp4"
+width="100%"
+playsinline
+class="video"
+[controls]="html5Controls"
+(play)="onPlayStudentVideo()"
+(pause)="onPauseStudentVideo()"
+(timeupdate)="onTimeUpdate($event)">
+</video>
+<!--Controls-->
+<ion-grid class="control-bar">
+<ion-row>
+  <ion-col class="control-bar">
+    <ion-button 
+      size="small" 
+        color="dark" 
+          [disabled]="goToBeginButton"
+          (click)="goToBeginStudentVideo()">          
+      <ion-icon name="play-skip-back-outline"></ion-icon>
+    </ion-button>  
+  </ion-col>
+  <ion-col class="control-bar">
+    <ion-button 
+      size="small" 
+        color="dark"
+        [disabled]="backwardButton" 
+        (click)="backwardStudentVideo()">          
+      <ion-icon name="play-back-circle-outline"></ion-icon>
+      -5
+    </ion-button>  
+  </ion-col>
+  <ion-col class="ion-text-center control-bar">
+    <ion-button 
+      size="small" 
+      color="dark" 
+      [disabled]="playPauseButton" 
+      (click)="playPauseStudentVideo()">
+      <ion-icon [name]="playButtonStatus ? 'play-outline' : 'pause-outline'"></ion-icon>
+    </ion-button> 
+  </ion-col>
+  <ion-col class="ion-text-end control-bar">
+    <ion-button 
+      size="small" 
+      color="dark" 
+      [disabled]="forwardButton" 
+      (click)="forwardStudentVideo()">
+      +5
+      <ion-icon name="play-forward-circle-outline"></ion-icon>           
+    </ion-button>   
+  </ion-col>       
+</ion-row>
+</ion-grid>
+<!--timeline-->
+<div class="timeline"[style.width]="timeline"></div>
+<!--feedback 1-->
+<!--feedback 1 info-->
+<div *ngIf="feedbackInfo01Visible">
+<ion-grid class="feedbackInfoTopMargin" (click)="chooseFeedback01()">
+<ion-row [style.width]="timelineMarker01" class = "timeMarkerMargin">
+  <ion-col class="timeMarker timeMarkerMargin">
+    <strong>0:12 </strong>
+    <ion-icon name="arrow-up"></ion-icon>
+  </ion-col>
+</ion-row>
+<!--Play Button 1-->
+<ion-row [class]="feedbackInfo01Status" class="ion-align-items-start">
+  <ion-col size="2">
+    <ion-button 
+      size="small" 
+      color="dark" 
+      (click)="openCloseFeedbackVideo01()">
+      <ion-icon slot="start" [name]="feedbackVideo01Visible ? 'arrow-back' : 'play'"></ion-icon>
+    </ion-button>
+  </ion-col>
+  <ion-col size="8">
+    <strong>Renate Holm</strong>
+    <br>Some thoughts about your timbre.
+  </ion-col>
+  <ion-col class="ion-align-self-end">
+    <ion-img src="https://video.mozart.gives/thmb_FB1.jpg"></ion-img>
+  </ion-col>
+</ion-row>
+</ion-grid>
+</div>
+<!--feedback 1 video:-->
+<video
+#feedbackVideo01
+*ngIf="feedbackVideo01Visible"
+src="https://video.mozart.gives/feedback-1.mp4"
+width="100%"
+controls
+autoplay
+playsinline
+(play)="onPlayFeedbackVideo()"></video>
+
+<!--feedback 2-->
+<!--feedback 2 info-->
+<div *ngIf="feedbackInfo02Visible">
+<ion-grid class="feedbackInfoTopMargin" (click)="chooseFeedback02()">
+<ion-row [style.width]="timelineMarker02" class = "timeMarkerMargin">
+ <ion-col class="timeMarker timeMarkerMargin">
+  <strong>0:28 </strong>
+    <ion-icon name="arrow-up"></ion-icon>
+ </ion-col>
+</ion-row>
+<!--Play Button 2-->
+<ion-row [class]="feedbackInfo02Status" class="ion-align-items-start">
+<ion-col size="2" class="play-return-button">
+  <ion-button 
+    size="small" 
+    color="dark" 
+    (click)="openCloseFeedbackVideo02()">
+    <ion-icon slot="start" [name]="feedbackVideo02Visible ? 'arrow-back' : 'play'"></ion-icon>
+  </ion-button>
+</ion-col>
+ <ion-col size="8">
+   <strong>Nicola Howes</strong>
+   <br>Relax your shoulders!
+ </ion-col>
+ <ion-col class="ion-align-self-end">
+   <ion-img src="https://video.mozart.gives/thmb_FB2.jpg"></ion-img>
+ </ion-col>
+</ion-row>
+</ion-grid>
+</div>
+<!--feedback 2 video-->  
+<video
+#feedbackVideo02
+*ngIf="feedbackVideo02Visible"
+src="https://video.mozart.gives/feedback-2.mp4"
+width="100%"
+controls
+autoplay
+playsinline
+(play)="onPlayFeedbackVideo()"></video>
+
+<!--feedback 3-->
+<!--feedback 3 info-->
+<div *ngIf="feedbackInfo03Visible">   
+<ion-grid class="feedbackInfoTopMargin" (click)="chooseFeedback03()">
+  <ion-row [style.width]="timelineMarker03" class = "timeMarkerMargin">
+    <ion-col class="timeMarker timeMarkerMargin">
+      <strong>0:41</strong>
+      <ion-icon name="arrow-up"></ion-icon>
+    </ion-col>
+  </ion-row>
+  <!--Play Button 3-->
+  <ion-row [class]="feedbackInfo03Status" class="ion-align-items-start">
+    <ion-col size="2" class="play-return-button">
+      <ion-button 
+        size="small" 
+        color="dark" 
+        (click)="openCloseFeedbackVideo03()">
+        <ion-icon slot="start" [name]="feedbackVideo03Visible ? 'arrow-back' : 'play'"></ion-icon>
+      </ion-button>
+    </ion-col>
+    <ion-col size="8">
+      <strong>Yana Korosha</strong>
+      <br>I've got some very helpful exercises for you!
+    </ion-col>
+    <ion-col class="ion-align-self-end">
+      <ion-img src="https://video.mozart.gives/thmb_FB3.jpg"></ion-img>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+</div>
+<!--feedback 3 video-->  
+<video
+#feedbackVideo03
+*ngIf="feedbackVideo03Visible"
+src="https://video.mozart.gives/feedback-3.mp4"
+width="100%"
+controls
+autoplay
+playsinline
+(play)="onPlayFeedbackVideo()"></video>
+</ion-content>

@@ -1,0 +1,19 @@
+ion-icon {
+    --ionicon-stroke-width: 16px;
+}
+
+.button-bar {
+  display: flex;
+  overflow-x: scroll;
+} 
+::-webkit-scrollbar {
+  display: none;
+} 
+.activated {
+  --background: #5d6770;
+  --color: #fff;
+} 
+.inactive {
+  --background: #edefef;
+  --color: var(--ion-color-primary);
+}

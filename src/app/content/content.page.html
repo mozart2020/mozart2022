@@ -1,0 +1,78 @@
+<ion-header>
+  <ion-toolbar color="light">
+    <img src="./assets/logo.png" width="200px"/>
+    <ion-buttons slot="end">
+      <ion-button size="small" color="primary">
+        <ion-icon name="notifications-outline"></ion-icon>
+      </ion-button>
+      <ion-button 
+        size="small" color="primary" 
+        *ngIf="currentUserImage == '' || currentUserImage == null"
+        routerLink="../community/profile">
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </ion-button>
+      <ion-thumbnail 
+        style="padding: 0.5rem;"
+        *ngIf="!currentUserImage == '' || !currentUserImage == null"
+        routerLink="../community/profile">
+        <img src="{{ currentUserImage }}">
+      </ion-thumbnail>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar color="light" *ngIf="studentVideos.length">
+    <div class="button-bar">
+    <ion-button
+      size="small"
+      shape="round"
+      [class]="allSelected"
+      (click)="selectAll()">All
+    </ion-button>
+    <ion-button
+      size="small"
+      shape="round"
+      [class]="myVideosSelected"
+      (click)="selectMyVideos()">My videos
+    </ion-button>
+    <ion-button
+      size="small"
+      shape="round"
+      [class]="studentVideosSelected"
+      (click)="selectStudentVideos()">Student videos
+  </ion-button>
+  </div>
+</ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item routerLink="./add-video">
+      <ion-label color="danger">
+        New Video
+      </ion-label>
+      <ion-label slot="end" color="danger">
+        <ion-icon name="videocam-outline"></ion-icon>
+      </ion-label>
+    </ion-item>
+    <ion-item routerLink="./example-detail">
+      <ion-label><h2>Example video</h2></ion-label>
+      <ion-label slot="end">
+        <p>2. April 2022</p>
+        <ion-badge color="success">Completed</ion-badge>
+      </ion-label>
+    </ion-item>
+    <ion-item>test</ion-item>
+  </ion-list>
+
+  <ion-item-divider *ngIf="studentVideos.length">
+    <ion-label>
+      Student videos
+    </ion-label>
+  </ion-item-divider>
+  <ion-list *ngIf="studentVideos.length">
+    <ion-item>
+      <ion-label><h2>Beispielvideo</h2></ion-label>
+      <ion-label><p>2.April 2022</p></ion-label>
+    </ion-item>
+    <ion-item>test</ion-item>
+  </ion-list>
+</ion-content>

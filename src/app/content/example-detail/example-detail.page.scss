@@ -1,0 +1,39 @@
+.control-bar {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.timeline {
+    height: 0.5rem;
+    background-color: rgb(120, 205, 245);
+    margin-bottom: 0.1rem;
+}
+.timeMarker {
+    text-align: end;
+    text-decoration-style: solid;
+}
+.timeMarkerMargin {
+    margin: 0;
+    padding: 0;
+    background-color: azure;
+}
+
+.feedbackInfoTopMargin {
+    border-top-style: solid;
+    border-top-color: rgb(120, 205, 245);
+    border-top-width: 0.1rem;
+}
+
+.feedbackInfo {
+    background-color: azure;
+    margin: 0;
+    padding: 0;
+}
+.feedbackInfoInactive {
+    opacity: 0.5;
+    background-color: azure;
+    margin: 0;
+    padding: 0;
+}
