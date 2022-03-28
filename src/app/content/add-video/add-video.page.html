@@ -1,9 +1,45 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>add-video</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home/content"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Add video</ion-title>
+    <ion-buttons slot="end">
+      <ion-button 
+        size="small" color="primary" 
+        *ngIf="currentUserImage == '' || currentUserImage == null"
+        routerLink="../community/profile">
+        <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+        <ion-icon name="happy-outline"></ion-icon>
+      </ion-button>      
+      <ion-button 
+        *ngIf="!currentUserImage == '' || !currentUserImage == null"
+        routerLink="../community/profile">
+        <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+        <ion-thumbnail style="padding: 0.5rem;">
+          <img src="{{ currentUserImage }}">
+        </ion-thumbnail>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+  <!-- Display the video stream while capturing -->
+  <video class="video" #video autoplay playsinline muted [hidden]="!isRecording"></video>
+ 
+  <!-- Neccessary for the video player -->
+  <div id="fullscreen" slot="fixed"></div>
+ 
+  <ion-list *ngIf="!isRecording">
+    <ion-item *ngFor="let video of videos;" (click)="play(video)" tappable>
+      {{ video }}
+    </ion-item>
+  </ion-list>
+ 
+  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+    <ion-fab-button (click)="isRecording ? stopRecord() : recordVideo()" color="danger">
+      <ion-icon [name]="isRecording ? 'stop' : 'videocam'"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
