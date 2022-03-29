@@ -13,10 +13,10 @@
   <video class="video" #video autoplay playsinline muted [hidden]="!isRecording"></video>
  
   <!-- Neccessary for the video player -->
-  <div id="fullscreen" slot="fixed"></div>
+  <div id="player" slot="fixed"></div>
  
   <ion-list *ngIf="!isRecording">
-    <ion-item *ngFor="let video of videos;" (click)="play(video)" tappable>
+    <ion-item *ngFor="let video of videos;" (click)="playVideo(video)" tappable>
       {{ video }}
     </ion-item>
   </ion-list>

@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
+import { CapacitorVideoPlayer } from 'capacitor-video-player';
 import { VideoService } from 'src/app/services/video.service';
 
 @Component({
@@ -25,6 +26,7 @@ export class AddVideoModalPage implements OnInit {
   }
 
   ngOnInit() {
+    this.videoPlayer = CapacitorVideoPlayer;
     this.authService.getCurrentUser().subscribe(res => {
       this.currentUserImage = res.profileImage;
     });
@@ -70,8 +72,18 @@ export class AddVideoModalPage implements OnInit {
     this.isRecording = false;
   }
 
-  async playVideo() {
-
+  async playVideo(video) {
+    console.log('function playVideo(), video: ', video);
+    // Get video as base64 data
+    const base64data = await this.videoService.getVideoUrl(video);
+    console.log('function playVideo(), base64data: ', base64data);
+    // Show the player fullscreen
+    await this.videoPlayer.initPlayer({
+      mode: 'embedded',
+      url: base64data,
+      playerId: 'player',
+      componentTag: 'app-add-video-modal'
+    }); 
   }
 
 
