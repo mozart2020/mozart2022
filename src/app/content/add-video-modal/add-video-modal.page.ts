@@ -1,6 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { AuthService } from 'src/app/services/auth.service';
 import { CapacitorVideoPlayer } from 'capacitor-video-player';
 import { VideoService } from 'src/app/services/video.service';
 
@@ -10,16 +9,17 @@ import { VideoService } from 'src/app/services/video.service';
   styleUrls: ['./add-video-modal.page.scss'],
 })
 export class AddVideoModalPage implements OnInit {
-  currentUserImage: string;
   @ViewChild('video') captureElement: ElementRef;
   mediaRecorder: MediaRecorder;
-  videoPlayer: any;
   isRecording = false;
-  videos = [];
+  videoPlayer: any;
+  playerIsInitialized = false;
+  
+  videoUrls = [];
+  test = '';
 
   constructor(
     private modalCtrl: ModalController,
-    private authService: AuthService,
     private videoService: VideoService,
     private changeDetector: ChangeDetectorRef) {
 
@@ -27,15 +27,14 @@ export class AddVideoModalPage implements OnInit {
 
   ngOnInit() {
     this.videoPlayer = CapacitorVideoPlayer;
-    this.authService.getCurrentUser().subscribe(res => {
-      this.currentUserImage = res.profileImage;
-    });
+    console.log('player is initialized: ', this.playerIsInitialized);
   }
   close() {
     this.modalCtrl.dismiss();
   }
 
   async recordVideo() {
+    console.log('player is initialized: ', this.playerIsInitialized);
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: 'user'
@@ -43,6 +42,7 @@ export class AddVideoModalPage implements OnInit {
       audio: true
     });
     this.captureElement.nativeElement.srcObject = stream;
+    this.captureElement.nativeElement.muted = true;
     this.isRecording = true;
     //Recorder:
     const options = { mimeType: 'video/webm' };
@@ -53,38 +53,42 @@ export class AddVideoModalPage implements OnInit {
         chunks.push(event.data)
       }
     }
-    this.mediaRecorder.start(30);
+    this.mediaRecorder.start();
     this.mediaRecorder.onstop = async (event) => {
       const videoBuffer = new Blob(chunks, { type: 'video/webm' });
       await this.videoService.storeVideo(videoBuffer);      
       // Reload our list
-      this.videos = this.videoService.videos;
-      console.log('Video array in modal page: ', this.videos);
+      this.videoUrls = this.videoService.videos;
+      console.log('Video in modal page: ', this.videoUrls);
       this.changeDetector.detectChanges();
     }
 
   }
 
   stopRecord() {
+    console.log('player is initialized: ', this.playerIsInitialized);
     this.mediaRecorder.stop();
     this.mediaRecorder = null;
     this.captureElement.nativeElement.srcObject = null;
     this.isRecording = false;
   }
 
-  async playVideo(video) {
-    console.log('function playVideo(), video: ', video);
-    // Get video as base64 data
-    const base64data = await this.videoService.getVideoUrl(video);
-    console.log('function playVideo(), base64data: ', base64data);
-    // Show the player fullscreen
+  async playVideo(videoUrl) {
+    const base64data = await this.videoService.getVideoUrl(videoUrl);
+    // Show player emebdded
     await this.videoPlayer.initPlayer({
       mode: 'embedded',
       url: base64data,
       playerId: 'player',
       componentTag: 'app-add-video-modal'
-    }); 
+    });
+  }
+  setPlayer() {
+    this.playerIsInitialized = true;
   }
 
+  takeVideo() {
+    this.modalCtrl.dismiss();
+  }
 
 }

@@ -1,6 +1,7 @@
 
 <ion-header>
   <ion-toolbar>
+    <ion-label slot="start" *ngIf="playerIsInitialized">test</ion-label>
     <ion-title>Add video</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="close()">Cancel</ion-button>
@@ -10,19 +11,38 @@
 
 <ion-content>
   <!-- Display the video stream while capturing -->
+  <hr>
+  <ion-label *ngIf="isRecording" color="danger"><h2>...is recording</h2></ion-label>
   <video class="video" #video autoplay playsinline muted [hidden]="!isRecording"></video>
+
  
   <!-- Neccessary for the video player -->
-  <div id="player" slot="fixed"></div>
+  <div id="player"></div>
  
-  <ion-list *ngIf="!isRecording">
-    <ion-item *ngFor="let video of videos;" (click)="playVideo(video)" tappable>
-      {{ video }}
-    </ion-item>
-  </ion-list>
+  <div *ngIf="!playerIsInitialized" (click)="setPlayer()">
+    <ion-list *ngFor="let videoUrl of videoUrls">
+      <ion-item (click)="playVideo(videoUrl)">
+        <ion-label>If you want, watch recorded video</ion-label>
+        <ion-button slot="end"><ion-icon name="play-outline"></ion-icon></ion-button>
+      </ion-item>
+    </ion-list>
+  </div>
+  <ion-button
+    *ngIf="!videoUrls.length == 0"
+    expand="block"
+    color="secondary"
+    (click)="takeVideo()">I take it!</ion-button>
+  <ion-button
+    *ngIf="!videoUrls.length == 0"
+    expand="block"
+    size="small"
+    (click)="takeVideo()">Cancel</ion-button>
  
-  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-    <ion-fab-button (click)="isRecording ? stopRecord() : recordVideo()" [color]="isRecording ? 'danger' : 'secondary'">
+  <ion-fab *ngIf="videoUrls.length == 0" vertical="top" horizontal="center" slot="fixed">
+    <ion-fab-button 
+    (click)="isRecording ? stopRecord() : recordVideo()" 
+    [color]="isRecording ? 'dark' : 'danger'"
+    [style]="isRecording ? 'opacity: 0.9' : 'opacity: 1'">
       <ion-icon [name]="isRecording ? 'stop' : 'videocam'"></ion-icon>
     </ion-fab-button>
   </ion-fab>

@@ -57,6 +57,7 @@ export class ContentPage implements OnInit {
       component: AddVideoModalPage,
       swipeToClose: true,
       presentingElement: this.routerOutlet.nativeEl,
+      initialBreakpoint: 0.8
     });
     modal.present();
   }

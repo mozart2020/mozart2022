@@ -20,7 +20,8 @@ export class VideoService {
       data: base64Data,
       directory: Directory.Data,
     });
-    // Add file to local array
+    // Replace file in array
+    this.videos = [];
     this.videos.unshift(savedFile.uri);
     console.log('MY Video Array: ', this.videos);
     
@@ -36,12 +37,10 @@ export class VideoService {
   });
   async getVideoUrl(fullPath) {
     const path = fullPath.substr(fullPath.lastIndexOf('/') + 1);
-    console.log('function video.service: getVideoUrl(), const path: ', path);
     const file = await Filesystem.readFile({
       path: path,
       directory: Directory.Data
     });
-    console.log('function video.service: getVideoUrl(), const file: ', file);
     return `data:video/mp4;base64,${file.data}`;
   }
   
