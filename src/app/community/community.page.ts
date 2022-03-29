@@ -82,8 +82,7 @@ export class CommunityPage implements OnInit {
     const modal = await this.modalCtrl.create({
       component: AddConnectionModalPage,
       swipeToClose: true,
-      presentingElement: this.routerOutlet.nativeEl,
-      cssClass: 'transperant-modal'
+      presentingElement: this.routerOutlet.nativeEl
     });
     modal.present();
     const { data } =await modal.onDidDismiss();

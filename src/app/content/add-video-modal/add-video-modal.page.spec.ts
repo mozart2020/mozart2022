@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { AddVideoPage } from './add-video.page';
+import { AddVideoModalPage } from './add-video-modal.page';
 
-describe('AddVideoPage', () => {
-  let component: AddVideoPage;
-  let fixture: ComponentFixture<AddVideoPage>;
+describe('AddVideoModalPage', () => {
+  let component: AddVideoModalPage;
+  let fixture: ComponentFixture<AddVideoModalPage>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AddVideoPage ],
+      declarations: [ AddVideoModalPage ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AddVideoPage);
+    fixture = TestBed.createComponent(AddVideoModalPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

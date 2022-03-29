@@ -9,16 +9,16 @@ const routes: Routes = [
     component: ContentPage
   },
   {
-    path: 'add-video',
-    loadChildren: () => import('./add-video/add-video.module').then( m => m.AddVideoPageModule)
-  },
-  {
     path: 'example-detail',
     loadChildren: () => import('./example-detail/example-detail.module').then( m => m.ExampleDetailPageModule)
   },
   {
     path: 'video-detail',
     loadChildren: () => import('./video-detail/video-detail.module').then( m => m.VideoDetailPageModule)
+  },
+  {
+    path: 'add-video-modal',
+    loadChildren: () => import('./add-video-modal/add-video-modal.module').then( m => m.AddVideoModalPageModule)
   }
 ];
 

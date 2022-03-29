@@ -1,13 +1,14 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import { VideoService } from 'src/app/services/video.service';
 
 @Component({
-  selector: 'app-add-video',
-  templateUrl: './add-video.page.html',
-  styleUrls: ['./add-video.page.scss'],
+  selector: 'app-add-video-modal',
+  templateUrl: './add-video-modal.page.html',
+  styleUrls: ['./add-video-modal.page.scss'],
 })
-export class AddVideoPage implements OnInit {
+export class AddVideoModalPage implements OnInit {
   currentUserImage: string;
   @ViewChild('video') captureElement: ElementRef;
   mediaRecorder: MediaRecorder;
@@ -16,8 +17,10 @@ export class AddVideoPage implements OnInit {
   videos = [];
 
   constructor(
+    private modalCtrl: ModalController,
     private authService: AuthService,
-    private videoService: VideoService) {
+    private videoService: VideoService,
+    private changeDetector: ChangeDetectorRef) {
 
   }
 
@@ -25,6 +28,9 @@ export class AddVideoPage implements OnInit {
     this.authService.getCurrentUser().subscribe(res => {
       this.currentUserImage = res.profileImage;
     });
+  }
+  close() {
+    this.modalCtrl.dismiss();
   }
 
   async recordVideo() {
@@ -45,14 +51,14 @@ export class AddVideoPage implements OnInit {
         chunks.push(event.data)
       }
     }
-    this.mediaRecorder.start(100);
+    this.mediaRecorder.start(30);
     this.mediaRecorder.onstop = async (event) => {
       const videoBuffer = new Blob(chunks, { type: 'video/webm' });
-      //await this.videoService.storeVideo(videoBuffer);
-      
+      await this.videoService.storeVideo(videoBuffer);      
       // Reload our list
-      //this.videos = this.videoService.videos;
-      //this.changeDetector.detectChanges();
+      this.videos = this.videoService.videos;
+      console.log('Video array in modal page: ', this.videos);
+      this.changeDetector.detectChanges();
     }
 
   }
@@ -67,5 +73,6 @@ export class AddVideoPage implements OnInit {
   async playVideo() {
 
   }
+
 
 }
