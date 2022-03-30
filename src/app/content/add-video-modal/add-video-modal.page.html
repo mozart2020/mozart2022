@@ -22,17 +22,19 @@
   <div *ngIf="!playerIsInitialized" (click)="setPlayer()">
     <ion-list *ngFor="let videoUrl of videoUrls">
       <ion-item (click)="playVideo(videoUrl)">
-        <ion-label>If you want, watch recorded video</ion-label>
+        <ion-label>Watch recorded video</ion-label>
         <ion-button slot="end"><ion-icon name="play-outline"></ion-icon></ion-button>
       </ion-item>
     </ion-list>
   </div>
-  <ion-button
-    *ngIf="!videoUrls.length == 0"
-    expand="block"
-    color="secondary"
-    (click)="takeVideo()">I take it!</ion-button>
-  <ion-button
+  <div *ngIf="!videoUrls.length == 0">
+    <ion-button
+      *ngFor="let videoUrl of videoUrls"
+      expand="block"
+      color="secondary"
+      (click)="takeAndUploadVideo(videoUrl)">I take it!</ion-button>
+    </div>
+    <ion-button
     *ngIf="!videoUrls.length == 0"
     expand="block"
     size="small"
@@ -41,7 +43,7 @@
   <ion-fab *ngIf="videoUrls.length == 0" vertical="top" horizontal="center" slot="fixed">
     <ion-fab-button 
     (click)="isRecording ? stopRecord() : recordVideo()" 
-    [color]="isRecording ? 'dark' : 'danger'"
+    color="danger"
     [style]="isRecording ? 'opacity: 0.9' : 'opacity: 1'">
       <ion-icon [name]="isRecording ? 'stop' : 'videocam'"></ion-icon>
     </ion-fab-button>

@@ -1,7 +1,9 @@
 import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, LoadingController, ToastController } from '@ionic/angular';
 import { CapacitorVideoPlayer } from 'capacitor-video-player';
 import { VideoService } from 'src/app/services/video.service';
+import { HttpClient } from '@angular/common/http';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-add-video-modal',
@@ -16,12 +18,16 @@ export class AddVideoModalPage implements OnInit {
   playerIsInitialized = false;
   
   videoUrls = [];
-  test = '';
+  videoBlob: Blob;
 
   constructor(
     private modalCtrl: ModalController,
+    private loadingCtrl: LoadingController,
     private videoService: VideoService,
-    private changeDetector: ChangeDetectorRef) {
+    private changeDetector: ChangeDetectorRef,
+    //private http: HttpClient,
+    private toastCtrl: ToastController
+    ) {
 
   }
 
@@ -31,6 +37,13 @@ export class AddVideoModalPage implements OnInit {
   }
   close() {
     this.modalCtrl.dismiss();
+  }
+  async presentToast(text) {
+    const toast = await this.toastCtrl.create({
+      message: text,
+      duration: 3000,
+    });
+    toast.present();
   }
 
   async recordVideo() {
@@ -56,6 +69,7 @@ export class AddVideoModalPage implements OnInit {
     this.mediaRecorder.start();
     this.mediaRecorder.onstop = async (event) => {
       const videoBuffer = new Blob(chunks, { type: 'video/webm' });
+      this.videoBlob = videoBuffer;
       await this.videoService.storeVideo(videoBuffer);      
       // Reload our list
       this.videoUrls = this.videoService.videos;
@@ -65,20 +79,12 @@ export class AddVideoModalPage implements OnInit {
 
   }
 
-  stopRecord() {
-    console.log('player is initialized: ', this.playerIsInitialized);
-    this.mediaRecorder.stop();
-    this.mediaRecorder = null;
-    this.captureElement.nativeElement.srcObject = null;
-    this.isRecording = false;
-  }
-
   async playVideo(videoUrl) {
-    const base64data = await this.videoService.getVideoUrl(videoUrl);
+    const base64dataUrl = await this.videoService.getVideoBase64Url(videoUrl);
     // Show player emebdded
     await this.videoPlayer.initPlayer({
       mode: 'embedded',
-      url: base64data,
+      url: base64dataUrl,
       playerId: 'player',
       componentTag: 'app-add-video-modal'
     });
@@ -86,9 +92,36 @@ export class AddVideoModalPage implements OnInit {
   setPlayer() {
     this.playerIsInitialized = true;
   }
-
-  takeVideo() {
-    this.modalCtrl.dismiss();
+  stopRecord() {
+    console.log('player is initialized: ', this.playerIsInitialized);
+    this.mediaRecorder.stop();
+    this.mediaRecorder = null;
+    this.captureElement.nativeElement.srcObject = null;
+    this.isRecording = false;
+  }
+  //Upload section:
+  async takeAndUploadVideo(videoUrl) {
+    const loading = await this.loadingCtrl.create({
+      message: 'Uploading video...',
+    });
+    await loading.present();
+    const fileName = 'test';
+    const formData = new FormData;
+    formData.append('file', this.videoBlob, fileName);
+    const url = 'https://backend.mozart.gives/upload.php';
+    /* this.http.post(url, formData)
+      .pipe(
+          finalize(() => {
+              loading.dismiss();
+          })
+      )
+      .subscribe(res => {
+          if (res['success']) {
+              this.presentToast('File upload complete.')
+          } else {
+              this.presentToast('File upload failed.')
+          }
+      }); */
   }
 
 }

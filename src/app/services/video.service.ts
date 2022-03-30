@@ -8,12 +8,11 @@ const VIDEO_DIR = "storedVideos";
 })
 export class VideoService {
   public videos = [];
-  private VIDEOS_KEY: string = 'videos';
 
   constructor() { }
 
   async storeVideo(blob) {
-    const fileName = 'mozart_' + new Date().getTime() + '.mp4';
+    const fileName = new Date().getTime() + '.mp4';
     const base64Data = await this.convertBlobToBase64(blob) as string;
     const savedFile = await Filesystem.writeFile({
       path: fileName,
@@ -23,10 +22,9 @@ export class VideoService {
     // Replace file in array
     this.videos = [];
     this.videos.unshift(savedFile.uri);
-    console.log('MY Video Array: ', this.videos);
-    
+    console.log('MY Video Array: ', this.videos);    
   }
-  // Helper function
+  // Helper functions
   private convertBlobToBase64 = (blob: Blob) => new Promise((resolve, reject) => {
     const reader = new FileReader;
     reader.onerror = reject;
@@ -35,7 +33,15 @@ export class VideoService {
     };
     reader.readAsDataURL(blob);    
   });
-  async getVideoUrl(fullPath) {
+  /* async getVideoBase64(fullPath) {
+    const path = fullPath.substr(fullPath.lastIndexOf('/') + 1);
+    const file = await Filesystem.readFile({
+      path: path,
+      directory: Directory.Data
+    });
+    return file.data;
+  } */
+  async getVideoBase64Url(fullPath) {
     const path = fullPath.substr(fullPath.lastIndexOf('/') + 1);
     const file = await Filesystem.readFile({
       path: path,
@@ -43,8 +49,6 @@ export class VideoService {
     });
     return `data:video/mp4;base64,${file.data}`;
   }
+
   
-  async loadVideos() {
-    return this.videos;
-  }
 }
