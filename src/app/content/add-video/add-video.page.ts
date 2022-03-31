@@ -1,8 +1,9 @@
 import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ModalController, LoadingController, AlertController, ToastController } from '@ionic/angular';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CapacitorVideoPlayer } from 'capacitor-video-player';
 import { VideoService } from 'src/app/services/video.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
 import { serverTimestamp } from '@angular/fire/firestore';
@@ -23,16 +24,13 @@ export class AddVideoPage implements OnInit {
   
   videoUrls = [];
   videoBlob: Blob;
-  videoDate: Date;
-  videoTitle: string;
-  videoNotes: string;
 
   constructor(
     private modalCtrl: ModalController,
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
-    private fb: FormBuilder,
     private videoService: VideoService,
+    private authService: AuthService,
     private changeDetector: ChangeDetectorRef,
     private http: HttpClient,
     private toastCtrl: ToastController
@@ -42,16 +40,13 @@ export class AddVideoPage implements OnInit {
 
   ngOnInit() {
     this.videoPlayer = CapacitorVideoPlayer;
-    this.titleAndNotes = this.fb.group({
-      title: ['', Validators.required],
-      notes: ['', Validators.required], 
+    this.titleAndNotes = new FormGroup({
+      title: new FormControl('', Validators.required),
+      notes: new FormControl('', Validators.required)
     });
-    console.log('NgOnInit, Formgroup this.titleAndNotes, res: ', this.titleAndNotes);
+    console.log('NgOnInit, this.titleAndNotes ', this.titleAndNotes);
   }
-  close() {
-    this.modalCtrl.dismiss();
-  }
-  async presentToast(text) {
+   async presentToast(text) {
     const toast = await this.toastCtrl.create({
       message: text,
       duration: 3000,
@@ -86,8 +81,6 @@ export class AddVideoPage implements OnInit {
     this.mediaRecorder.onstop = async (event) => {
       const videoBuffer = new Blob(chunks, { type: 'video/webm' });
       this.videoBlob = videoBuffer;
-      this.videoDate = new Date();
-      console.log('date: ', this.videoDate, 'date to string: ', this.videoDate.toString())
       await this.videoService.storeVideo(videoBuffer);      
       // Reload our list
       this.videoUrls = this.videoService.videos;
@@ -116,21 +109,26 @@ export class AddVideoPage implements OnInit {
     this.captureElement.nativeElement.srcObject = null;
     this.isRecording = false;
   }
-  //Upload section:
   cancel() {
     this.videoUrls = [];
   }
-  async takeVideo() {
+  addVideo() {
     this.takeVideoStatus = true;
-    //this.videoTitle = this.titleAndNotes.value;
-    console.log('this.titleAndNotes.value.title: ', this.titleAndNotes.value[0]);
+    const date = serverTimestamp();
+    const title = this.titleAndNotes.get('title').value;
+    const notes = this.titleAndNotes.get('notes').value;
+    this.videoService.addVideo(date, title, notes);
+    this.uploadVideo();
   }
-  async uploadVideo(videoUrl) {
+  //Upload section:
+  async uploadVideo() {
     const loading = await this.loadingCtrl.create({
       message: 'Uploading video...',
     });
     await loading.present();
-    const fileName = 'test1.mp4';
+    const mail = this.authService.getCurrentUserEmail();
+    const date = new Date().getTime();
+    const fileName = `${mail}_${date}.mp4`;
     const formData = new FormData;
     formData.append('file', this.videoBlob, fileName);
     const url = 'https://backend.mozart.gives/upload.php';
@@ -142,18 +140,14 @@ export class AddVideoPage implements OnInit {
       )
       .subscribe(res => {
           if (res['success']) {
-              this.presentToast('Video upload complete.')
+              this.presentToast('Video upload complete.');
+              this.videoService.updateVideoUrl(`https://backend.mozart.gives/uploads/${fileName}`);
+              console.log('video url created bei updateVideoUrl(): ', `https://backend.mozart.gives/uploads/${fileName}`)
           } else {
-              this.presentToast('Video upload failed.')
+              this.presentToast('Video upload failed.');
           }
       });
   }
-  addVideo() {
-    const date = serverTimestamp();
-    const title = '';
-    const notes = '';
-    const length = '';
-    const videoUrl = '';
-  }
+
 
 }

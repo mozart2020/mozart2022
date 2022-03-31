@@ -20,16 +20,13 @@
   <hr>
   <ion-label *ngIf="isRecording" color="danger"><h2>...is recording</h2></ion-label>
   <video class="video" #video autoplay playsinline muted [hidden]="!isRecording"></video>
+
  
   <!-- Neccessary for the video player -->
   <div id="player"></div>
  
   <div *ngIf="!playerIsInitialized" (click)="setPlayer()">
     <ion-list *ngFor="let videoUrl of videoUrls">
-      <ion-item (click)="playVideo(videoUrl)">
-        <ion-label>Watch recorded video</ion-label>
-        <ion-button slot="end"><ion-icon name="play-outline"></ion-icon></ion-button>
-      </ion-item>
       <ion-button (click)="playVideo(videoUrl)" expand="block">
         Watch recorded video
         <ion-button slot="end"><ion-icon name="play-outline"></ion-icon></ion-button>
@@ -38,17 +35,23 @@
   </div>
  
   <div *ngIf="!videoUrls.length == 0">    
-    <form (ngSubmit)="takeVideo()" [formGroup]="titleAndNotes">
-      <ion-item fill="solid" class="ion-margin-bottom">
-        <ion-input type="name" placeholder="Give your video a short title" formControlName="title"></ion-input>
+    <form [formGroup]="titleAndNotes">
+      <ion-item>
+        <ion-label>Title:</ion-label>
+        <ion-input
+          formControlName="title" 
+          placeholder="Give your video a title"></ion-input>
       </ion-item>
-      <ion-item fill="solid">
-        <ion-input type="name" placeholder="Some notes on your video" formControlName="notes"></ion-input>
+      <ion-item>
+        <ion-label>Notes:</ion-label>
+        <ion-input 
+          formControlName="notes" 
+          placeholder="Comment on your video"></ion-input>
       </ion-item>
-      <ion-button
-        type="submit"
-        expand="block"
-        color="secondary">I take it!</ion-button>
+      <ion-button 
+          (click)="addVideo()"
+          expand="block"
+          color="secondary">I take it!</ion-button> <!-- [disabled]="!titleAndNotes.get('title').valid" -->
     </form>
     
   </div>
@@ -56,15 +59,17 @@
   <ion-row *ngIf="!isRecording">
     <ion-col size="6">
       <ion-button
-        expand="block"
-        color="danger"
-        (click)="recordVideo()">Record new video</ion-button>
-    </ion-col>
-    <ion-col size="6">
-      <ion-button
+        size="small"
         expand="block"      
         (click)="cancel()"
         routerLink="../content">Cancel</ion-button>    
+    </ion-col>
+    <ion-col size="6">
+      <ion-button
+        size="small"
+        expand="block"
+        color="danger"
+        (click)="recordVideo()">Record new video</ion-button>
     </ion-col>
   </ion-row>
 </ion-content>

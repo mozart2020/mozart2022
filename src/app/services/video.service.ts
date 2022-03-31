@@ -15,13 +15,10 @@ import {
   documentId
 } from '@angular/fire/firestore';
 
-export interface Video {
-  videoId?: string;
+export interface VideoInfo {
   date: string;
   title: string; 
   notes: string;
-  length: string;
-  videoUrl: string;
 }
 
 @Injectable({
@@ -29,6 +26,7 @@ export interface Video {
 })
 export class VideoService {
   public videos = [];
+  justAddedVideoID: string;
 
   constructor(
     private firestore: Firestore,
@@ -73,12 +71,35 @@ export class VideoService {
     });
     return `data:video/mp4;base64,${file.data}`;
   }
+  async getVideoDuration(fullPath) {
+    const path = fullPath.substr(fullPath.lastIndexOf('/') + 1);
+    const file = await Filesystem.readFile({
+      path: path,
+      directory: Directory.Data
+    });
+    return `data:video/mp4;base64,${file.data}`;
+  }
 
   //Firebase section:
-  addVideo(video: Video) {
+  addVideo(date, title, notes) {
     const userId = this.auth.getCurrentUserId();
     const videosRef = collection(this.firestore, `users/${userId}/videos`);
-    return addDoc(videosRef, video);
+    return addDoc(videosRef, { 
+      date,
+      title,
+      notes
+    }).then(res => {
+      this.justAddedVideoID = res.id;
+      console.log('just created this id for added video: ', this.justAddedVideoID)
+    })
+  }
+  updateVideoUrl(videoUrl) {
+    const userId = this.auth.getCurrentUserId();
+    const videoId = this.justAddedVideoID;
+    const videoDocRef = doc(this.firestore, `users/${userId}/videos/${videoId}`);
+    return updateDoc(videoDocRef, { 
+      videoUrl
+    });
   }
 
   
