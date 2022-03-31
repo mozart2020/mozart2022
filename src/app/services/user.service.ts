@@ -24,9 +24,9 @@ export class UserService {
   logout$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
-    private firestore: Firestore, 
-      private auth: AuthService,
-      private firebaseAuth: Auth
+    private firestore: Firestore,
+    private firebaseAuth: Auth,
+    private auth: AuthService    
   ) {
     onAuthStateChanged(this.firebaseAuth, user => {
       if (!user) {

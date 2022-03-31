@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { ModalController, LoadingController, ToastController } from '@ionic/angular';
+import { ModalController, LoadingController, AlertController, ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CapacitorVideoPlayer } from 'capacitor-video-player';
 import { VideoService } from 'src/app/services/video.service';
@@ -8,11 +8,11 @@ import { finalize } from 'rxjs/operators';
 import { serverTimestamp } from '@angular/fire/firestore';
 
 @Component({
-  selector: 'app-add-video-modal',
-  templateUrl: './add-video-modal.page.html',
-  styleUrls: ['./add-video-modal.page.scss'],
+  selector: 'app-add-video',
+  templateUrl: './add-video.page.html',
+  styleUrls: ['./add-video.page.scss'],
 })
-export class AddVideoModalPage implements OnInit {
+export class AddVideoPage implements OnInit {
   @ViewChild('video') captureElement: ElementRef;
   titleAndNotes: FormGroup;
   mediaRecorder: MediaRecorder;
@@ -30,7 +30,8 @@ export class AddVideoModalPage implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private loadingCtrl: LoadingController,
-    //private fb: FormBuilder,
+    private alertCtrl: AlertController,
+    private fb: FormBuilder,
     private videoService: VideoService,
     private changeDetector: ChangeDetectorRef,
     private http: HttpClient,
@@ -41,10 +42,10 @@ export class AddVideoModalPage implements OnInit {
 
   ngOnInit() {
     this.videoPlayer = CapacitorVideoPlayer;
-    /* this.titleAndNotes = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(1)]],
-      notes: ['', [Validators.required, Validators.minLength(1)]], 
-    }); */
+    this.titleAndNotes = this.fb.group({
+      title: ['', Validators.required],
+      notes: ['', Validators.required], 
+    });
     console.log('NgOnInit, Formgroup this.titleAndNotes, res: ', this.titleAndNotes);
   }
   close() {
@@ -60,6 +61,9 @@ export class AddVideoModalPage implements OnInit {
 
   async recordVideo() {
     console.log('player is initialized: ', this.playerIsInitialized);
+    if (this.videoUrls.length != 0) {
+      this.videoUrls = [];
+    }
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: 'user'
@@ -90,7 +94,6 @@ export class AddVideoModalPage implements OnInit {
       console.log('Video in modal page: ', this.videoUrls);
       this.changeDetector.detectChanges();
     }
-
   }
 
   async playVideo(videoUrl) {
@@ -100,7 +103,7 @@ export class AddVideoModalPage implements OnInit {
       mode: 'embedded',
       url: base64dataUrl,
       playerId: 'player',
-      componentTag: 'app-add-video-modal'
+      componentTag: 'app-add-video'
     });
   }
   setPlayer() {
@@ -114,10 +117,13 @@ export class AddVideoModalPage implements OnInit {
     this.isRecording = false;
   }
   //Upload section:
+  cancel() {
+    this.videoUrls = [];
+  }
   async takeVideo() {
-    //const formGroup = this.titleAndNotes;
     this.takeVideoStatus = true;
-    console.log(this.takeVideoStatus);
+    //this.videoTitle = this.titleAndNotes.value;
+    console.log('this.titleAndNotes.value.title: ', this.titleAndNotes.value[0]);
   }
   async uploadVideo(videoUrl) {
     const loading = await this.loadingCtrl.create({

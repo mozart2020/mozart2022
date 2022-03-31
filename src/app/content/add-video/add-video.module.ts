@@ -4,9 +4,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { AddVideoModalPageRoutingModule } from './add-video-modal-routing.module';
-
-import { AddVideoModalPage } from './add-video-modal.page';
+import { AddVideoPageRoutingModule } from './add-video-routing.module';
+import { AddVideoPage } from './add-video.page';
 
 @NgModule({
   imports: [
@@ -14,8 +13,8 @@ import { AddVideoModalPage } from './add-video-modal.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    AddVideoModalPageRoutingModule
+    AddVideoPageRoutingModule
   ],
-  declarations: [AddVideoModalPage]
+  declarations: [AddVideoPage]
 })
-export class AddVideoModalPageModule {}
+export class AddVideoPageModule {}

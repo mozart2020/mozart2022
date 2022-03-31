@@ -1,7 +1,28 @@
 import { Injectable } from '@angular/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
+import { AuthService } from './auth.service';
+import { 
+  arrayUnion, 
+  collection, 
+  collectionData, 
+  doc,
+  addDoc,
+  Firestore, 
+  updateDoc, 
+  docData, 
+  query, 
+  where, 
+  documentId
+} from '@angular/fire/firestore';
 
-const VIDEO_DIR = "storedVideos";
+export interface Video {
+  videoId?: string;
+  date: string;
+  title: string; 
+  notes: string;
+  length: string;
+  videoUrl: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +30,10 @@ const VIDEO_DIR = "storedVideos";
 export class VideoService {
   public videos = [];
 
-  constructor() { }
+  constructor(
+    private firestore: Firestore,
+    private auth: AuthService
+  ) { }
 
   async storeVideo(blob) {
     const fileName = new Date().getTime() + '.mp4';
@@ -48,6 +72,13 @@ export class VideoService {
       directory: Directory.Data
     });
     return `data:video/mp4;base64,${file.data}`;
+  }
+
+  //Firebase section:
+  addVideo(video: Video) {
+    const userId = this.auth.getCurrentUserId();
+    const videosRef = collection(this.firestore, `users/${userId}/videos`);
+    return addDoc(videosRef, video);
   }
 
   

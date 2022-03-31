@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IonRouterOutlet, ModalController } from '@ionic/angular';
-import { AddVideoModalPage } from './add-video-modal/add-video-modal.page';
+import { IonRouterOutlet } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -17,7 +16,6 @@ export class ContentPage implements OnInit {
   studentVideosSelected = "inactive";
 
   constructor(
-    private modalCtrl: ModalController,
     private routerOutlet: IonRouterOutlet,
     private authService: AuthService
   ) {
@@ -50,16 +48,6 @@ export class ContentPage implements OnInit {
       this.myVideosSelected = "inactive";
       this.allSelected = "inactive";
     }
-  }
-
-  async openAddVideo() {
-    const modal = await this.modalCtrl.create({
-      component: AddVideoModalPage,
-      swipeToClose: true,
-      presentingElement: this.routerOutlet.nativeEl,
-      initialBreakpoint: 0.8
-    });
-    modal.present();
   }
 
 }
