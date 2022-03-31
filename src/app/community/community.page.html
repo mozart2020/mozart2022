@@ -62,12 +62,19 @@
     <ion-icon name="person" slot="end"></ion-icon>
   </ion-button>
   <ion-card *ngFor="let friend of friends">
-    <ion-item lines="none">
-      <ion-icon name="happy-outline" *ngIf="(friend.profileImage == '')"></ion-icon>
-      <ion-avatar>
-        <ion-img [src]="friend.profileImage" *ngIf="(friend.profileImage !== '')"></ion-img>
-      </ion-avatar>
-      <ion-label class="friends-card">{{ friend.email }}</ion-label>
-    </ion-item>
+    <ion-card-header>      
+      <ion-card-title>{{ friend.name }}</ion-card-title>
+    </ion-card-header>
+    <ion-row>
+      <ion-col size="4">
+        <img src="{{ friend.profileImage }}" *ngIf="(friend.profileImage !== '')"/>
+        <ion-icon name="happy-outline" *ngIf="(friend.profileImage == '')"></ion-icon>
+      </ion-col>
+      <ion-col size="8">        
+        <ion-card-content>
+          {{ friend.email }}
+        </ion-card-content>
+      </ion-col>
+    </ion-row>    
   </ion-card>
 </ion-content>

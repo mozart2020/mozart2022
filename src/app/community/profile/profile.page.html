@@ -4,9 +4,30 @@
       <ion-back-button defaultHref="home/content"></ion-back-button>
     </ion-buttons>
     <ion-title>My profile</ion-title>
+    <ion-buttons slot="end">
+      <ion-button 
+        size="small" color="primary" 
+        *ngIf="currentUserImage == '' || currentUserImage == null">
+        <ion-icon name="happy-outline"></ion-icon>
+      </ion-button>      
+      <ion-button 
+        *ngIf="!currentUserImage == '' || !currentUserImage == null">
+        <ion-thumbnail style="padding: 0.5rem;">
+          <img src="{{ currentUserImage }}">
+        </ion-thumbnail>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+  <ion-card>
+    <img src="{{ currentUserImage }}" width="150px"/>
+    <ion-card-header>
+      <ion-card-title>{{ currentUserName }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      {{ currentUserEmail }}
+    </ion-card-content>
+  </ion-card>
 </ion-content>

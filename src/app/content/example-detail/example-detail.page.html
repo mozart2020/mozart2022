@@ -10,15 +10,15 @@
 <ion-content>
 <!--student video:-->
 <video
-#studentVideo
-src="https://video.mozart.gives/student.mp4"
-width="100%"
-playsinline
-class="video"
-[controls]="html5Controls"
-(play)="onPlayStudentVideo()"
-(pause)="onPauseStudentVideo()"
-(timeupdate)="onTimeUpdate($event)">
+  #studentVideo
+  src="https://video.mozart.gives/student.mp4"
+  width="100%"
+  playsinline
+  class="video"
+  [controls]="html5Controls"
+  (play)="onPlayStudentVideo()"
+  (pause)="onPauseStudentVideo()"
+  (timeupdate)="onTimeUpdate($event)">
 </video>
 <!--Controls-->
 <ion-grid class="control-bar">

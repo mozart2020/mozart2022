@@ -14,6 +14,7 @@ import {
   where, 
   documentId
 } from '@angular/fire/firestore';
+import { orderBy } from 'firebase/firestore';
 
 export interface VideoInfo {
   date: string;
@@ -100,6 +101,17 @@ export class VideoService {
     return updateDoc(videoDocRef, { 
       videoUrl
     });
+  }
+  getVideos() {
+    const userId = this.auth.getCurrentUserId();
+    const videosRef = collection(this.firestore, `users/${userId}/videos`);
+    const q = query(videosRef, orderBy('date'));
+    return collectionData(q, { idField: 'id' });
+  }
+  getVideoById(id) {
+    const userId = this.auth.getCurrentUserId();
+    const videoDocRef = doc(this.firestore, `users/${userId}/videos/${id}`);
+    return docData(videoDocRef, { idField: 'id' });
   }
 
   

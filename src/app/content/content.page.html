@@ -59,8 +59,17 @@
     <ion-item routerLink="./example-detail">
       <ion-label><h2>Example video</h2></ion-label>
       <ion-label slot="end">
-        <p>2. April 2022</p>
+        <p>{{ exampleDate | date :'mediumDate' }}</p>
         <ion-badge color="success">Completed</ion-badge>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list *ngFor="let currentUserVideo of currentUserVideos">
+    <ion-item routerLink="./video-detail/{{currentUserVideo.id}}">
+      <ion-label><h2>{{ currentUserVideo.title }}</h2></ion-label>
+      <ion-label slot="end">
+        <p>{{currentUserVideo.date.toDate().toString() | date :'mediumDate'}}</p>
+        <ion-badge color="tertiary">ready to go</ion-badge>
       </ion-label>
     </ion-item>
   </ion-list>

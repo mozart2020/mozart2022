@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { ModalController, LoadingController, AlertController, ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { LoadingController, ToastController } from '@ionic/angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CapacitorVideoPlayer } from 'capacitor-video-player';
 import { VideoService } from 'src/app/services/video.service';
@@ -24,11 +25,11 @@ export class AddVideoPage implements OnInit {
   
   videoUrls = [];
   videoBlob: Blob;
+  date: any;
 
   constructor(
-    private modalCtrl: ModalController,
+    private router: Router,
     private loadingCtrl: LoadingController,
-    private alertCtrl: AlertController,
     private videoService: VideoService,
     private authService: AuthService,
     private changeDetector: ChangeDetectorRef,
@@ -114,12 +115,13 @@ export class AddVideoPage implements OnInit {
   }
   addVideo() {
     this.takeVideoStatus = true;
-    const date = serverTimestamp();
+    this.date = serverTimestamp();
     const title = this.titleAndNotes.get('title').value;
     const notes = this.titleAndNotes.get('notes').value;
-    this.videoService.addVideo(date, title, notes);
+    this.videoService.addVideo(this.date, title, notes);
     this.uploadVideo();
   }
+  
   //Upload section:
   async uploadVideo() {
     const loading = await this.loadingCtrl.create({
@@ -136,6 +138,7 @@ export class AddVideoPage implements OnInit {
       .pipe(
           finalize(() => {
               loading.dismiss();
+              this.router.navigateByUrl('/home/content', { replaceUrl: true });
           })
       )
       .subscribe(res => {

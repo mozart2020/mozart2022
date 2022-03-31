@@ -1,9 +1,21 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>video-detail</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home/content"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ videoTitle }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+  <ion-item>
+    <video
+      #studentVideo
+      src="{{videoUrl}}"
+      width="90%"
+      playsinline
+      class="video"
+      controls>
+    </video>
+  </ion-item>
 </ion-content>

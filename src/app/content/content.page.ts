@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { IonRouterOutlet } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
+import { VideoService } from '../services/video.service';
 
 @Component({
   selector: 'app-content',
@@ -8,6 +8,7 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./content.page.scss'],
 })
 export class ContentPage implements OnInit {
+  exampleDate = new Date().toString();
   currentUserImage: string;
   currentUserVideos = [];
   studentVideos = [];
@@ -16,8 +17,8 @@ export class ContentPage implements OnInit {
   studentVideosSelected = "inactive";
 
   constructor(
-    private routerOutlet: IonRouterOutlet,
-    private authService: AuthService
+    private authService: AuthService,
+    private videoService: VideoService
   ) {
 
   }
@@ -25,6 +26,10 @@ export class ContentPage implements OnInit {
   ngOnInit() {
     this.authService.getCurrentUser().subscribe(res => {
       this.currentUserImage = res.profileImage;
+    });
+    this.videoService.getVideos().subscribe(res => {
+      this.currentUserVideos = res;
+      console.log('current user videos: ', res);
     });
   }
 
