@@ -3,24 +3,19 @@
     <ion-thumbnail slot="start">
       <img src="../../assets/icon/icon.png">
     </ion-thumbnail>
-    <ion-title>Videos</ion-title>
-    <ion-buttons slot="end">
-      <ion-button 
-        size="small" color="primary" 
-        *ngIf="currentUserImage == '' || currentUserImage == null"
-        routerLink="../community/profile">
-        <ion-icon name="ellipsis-vertical-outline"></ion-icon>
-        <ion-icon name="happy-outline"></ion-icon>
-      </ion-button>      
-      <ion-button 
-        *ngIf="!currentUserImage == '' || !currentUserImage == null"
-        routerLink="../community/profile">
-        <ion-icon name="ellipsis-vertical-outline"></ion-icon>
-        <ion-thumbnail style="padding: 0.5rem;">
-          <img src="{{ currentUserImage }}">
-        </ion-thumbnail>
-      </ion-button>
-    </ion-buttons>
+    <ion-title>Videos</ion-title> 
+    <ion-thumbnail
+      slot="end"
+      *ngIf="currentUserImage == '' || currentUserImage == null"
+      style="padding: 0.5rem;">
+      <img src="../../assets/happy.png">
+    </ion-thumbnail>
+    <ion-thumbnail
+      slot="end"
+      *ngIf="!currentUserImage == '' || !currentUserImage == null"
+      style="padding: 0.5rem;">
+      <img src="{{ currentUserImage }}">
+    </ion-thumbnail>
   </ion-toolbar>
   <ion-toolbar color="light" *ngIf="studentVideos.length">
     <div class="button-bar">

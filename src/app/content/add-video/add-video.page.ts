@@ -128,9 +128,9 @@ export class AddVideoPage implements OnInit {
       message: 'Uploading video...',
     });
     await loading.present();
-    const mail = this.authService.getCurrentUserEmail();
+    const userId = this.authService.getCurrentUserId();
     const date = new Date().getTime();
-    const fileName = `${mail}_${date}.mp4`;
+    const fileName = `${userId}_${date}.mp4`;
     const formData = new FormData;
     formData.append('file', this.videoBlob, fileName);
     const url = 'https://backend.mozart.gives/upload.php';

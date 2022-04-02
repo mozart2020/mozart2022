@@ -15,6 +15,14 @@ const routes: Routes = [
   {
     path: 'add-connection-modal',
     loadChildren: () => import('./add-connection-modal/add-connection-modal.module').then( m => m.AddConnectionModalPageModule)
+  },
+  {
+    path: 'friend-detail',
+    loadChildren: () => import('./friend-detail/friend-detail.module').then( m => m.FriendDetailPageModule)
+  },
+  {
+    path: 'group-detail',
+    loadChildren: () => import('./group-detail/group-detail.module').then( m => m.GroupDetailPageModule)
   }
 ];
 
