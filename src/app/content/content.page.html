@@ -17,6 +17,7 @@
       <img src="{{ currentUserImage }}">
     </ion-thumbnail>
   </ion-toolbar>
+
   <ion-toolbar color="light" *ngIf="studentVideos.length">
     <div class="button-bar">
     <ion-button
@@ -61,18 +62,21 @@
   </ion-list>
   <ion-list *ngFor="let currentUserVideo of currentUserVideos">
     <ion-item routerLink="./video-detail/{{currentUserVideo.id}}">
-      <ion-label><h2>{{ currentUserVideo.title }}</h2></ion-label>
+      <ion-label *ngIf="!currentUserVideo.title == ''">
+        <h2>{{ currentUserVideo.title }}</h2>
+      </ion-label>
+      <ion-label *ngIf="currentUserVideo.title == ''">
+        <h2>{{ currentUserVideo.date.toDate().toString() | date :'shortTime' }}</h2>
+      </ion-label>
       <ion-label slot="end">
-        <p>{{currentUserVideo.date.toDate().toString() | date :'mediumDate'}}</p>
+        <p>{{ currentUserVideo.date.toDate().toString() | date :'mediumDate' }}</p>
         <ion-badge color="tertiary">ready to go</ion-badge>
       </ion-label>
     </ion-item>
   </ion-list>
 
-  <ion-item-divider *ngIf="studentVideos.length">
-    <ion-label>
+  <ion-item-divider *ngIf="studentVideos.length" sticky="true">
       Student videos
-    </ion-label>
   </ion-item-divider>
   <ion-list *ngIf="studentVideos.length">
     <ion-item>

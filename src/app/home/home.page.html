@@ -2,12 +2,12 @@
   <ion-tab-bar slot="bottom">
     <ion-tab-button tab="content" #content>
       <ion-icon [name]="content.selected ? 'videocam' : 'videocam-outline'"></ion-icon>
-      <ion-label>Video area</ion-label>
+      <ion-label>Videos</ion-label>
     </ion-tab-button>
     <ion-tab-button tab="community" #community>
       <ion-icon [name]="community.selected ? 'people' : 'people-outline'"></ion-icon>
       <ion-badge *ngIf="receivedRequestId != ''"  color="danger">1</ion-badge>
-      <ion-label>Friends area</ion-label>
+      <ion-label>Community</ion-label>
     </ion-tab-button>
     <ion-tab-button>
       <ion-icon name="log-out-outline" (click)="confirmLogout()"></ion-icon>

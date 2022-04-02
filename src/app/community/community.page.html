@@ -3,7 +3,7 @@
     <ion-thumbnail slot="start">
       <img src="../../assets/icon/icon.png">
     </ion-thumbnail>
-    <ion-title>Friends</ion-title>    
+    <ion-title>Community</ion-title>    
     <ion-thumbnail
     slot="end"
     *ngIf="currentUserImage == '' || currentUserImage == null"
@@ -17,6 +17,29 @@
     <img src="{{ currentUserImage }}">
   </ion-thumbnail>
   </ion-toolbar>
+
+  <ion-toolbar color="light" *ngIf="groups.length">
+    <div class="button-bar">
+    <ion-button
+      size="small"
+      shape="round"
+      [class]="allSelected"
+      (click)="selectAll()">All
+    </ion-button>
+    <ion-button
+      size="small"
+      shape="round"
+      [class]="friendsSelected"
+      (click)="selectFriends()">Friends
+    </ion-button>
+    <ion-button
+      size="small"
+      shape="round"
+      [class]="groupsSelected"
+      (click)="selectGroups()">Groups
+  </ion-button>
+  </div>
+</ion-toolbar>
 </ion-header>
 
 <ion-content>
@@ -53,23 +76,42 @@
     expand="block" 
     color="secondary"
     (click)="openAddConnection()"
-    >Add friend
+    >Add a learning friend 
     <ion-icon name="person" slot="end"></ion-icon>
   </ion-button>
-  <ion-card *ngFor="let friend of friends">
-    <ion-card-header>      
-      <ion-card-title>{{ friend.name }}</ion-card-title>
-    </ion-card-header>
-    <ion-row>
-      <ion-col size="4">
-        <img src="{{ friend.profileImage }}" *ngIf="(friend.profileImage !== '')"/>
-        <ion-icon name="happy-outline" *ngIf="(friend.profileImage == '')"></ion-icon>
-      </ion-col>
-      <ion-col size="8">        
-        <ion-card-content>
-          {{ friend.email }}
-        </ion-card-content>
-      </ion-col>
-    </ion-row>    
-  </ion-card>
+  <ion-button 
+    fill="solid" 
+    expand="block" 
+    color="secondary"
+    >Create a learning group
+    <ion-icon name="people" slot="end"></ion-icon>
+</ion-button>
+
+<ion-item-divider *ngIf="friends.length" sticky="true">
+    My learning friends
+</ion-item-divider>
+
+<ion-list *ngFor="let friend of friends">
+  <ion-item routerLink="./friend-detail">
+    <ion-label *ngIf="friend.name == '' || friend.name == null">
+      <h2>{{ friend.email }}</h2>
+    </ion-label>
+    <ion-label *ngIf="!friend.name == '' || !friend.name == null">
+      <h2>{{ friend.name }}</h2>
+    </ion-label>
+    <img 
+      src="{{ friend.profileImage }}" 
+      *ngIf="(friend.profileImage !== '')"
+      width="50px"
+      slot="end"/>
+      <img 
+      src="../../assets/happy.png" 
+      *ngIf="(friend.profileImage == '')"
+      width="50px"
+      slot="end"/>
+  </ion-item>
+</ion-list>
+<ion-item-divider *ngIf="groups.length" sticky="true">
+    My learning groups
+</ion-item-divider>
 </ion-content>

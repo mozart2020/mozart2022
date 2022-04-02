@@ -18,6 +18,10 @@ export class CommunityPage implements OnInit {
   currentUserImage: string;
   friendsIds = [];
   friends = [];
+  groups = [];
+  allSelected = "activated";
+  friendsSelected = "inactive";
+  groupsSelected = "inactive";
   receivedRequestId = ''; 
   receivedRequestImage = '';
   receivedRequestEmail = '';
@@ -76,6 +80,28 @@ export class CommunityPage implements OnInit {
         console.log('several user connections');
       }
     });
+  }
+  //toggle view: all, friends, groups
+  selectAll() {
+    if (this.allSelected = "inactive") {
+      this.allSelected = "activated";
+      this.friendsSelected = "inactive";
+      this.groupsSelected = "inactive";
+    }
+  }
+  selectFriends() {
+    if (this.friendsSelected = "inactive") {
+      this.friendsSelected = "activated";
+      this.allSelected = "inactive";
+      this.groupsSelected = "inactive";
+    }
+  }
+  selectGroups() {
+    if (this.groupsSelected = "inactive") {
+      this.groupsSelected = "activated";
+      this.friendsSelected = "inactive";
+      this.allSelected = "inactive";
+    }
   }
   //Vorhandene User zum Senden einer Freundschaftsanfrage per Modal anzeigen
   async openAddConnection() {
