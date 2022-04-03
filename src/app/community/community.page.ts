@@ -19,9 +19,9 @@ export class CommunityPage implements OnInit {
   friendsIds = [];
   friends = [];
   groups = [];
-  allSelected = "activated";
-  friendsSelected = "inactive";
-  groupsSelected = "inactive";
+  allSelected = true;
+  friendsSelected = false;
+  groupsSelected = false;
   receivedRequestId = ''; 
   receivedRequestImage = '';
   receivedRequestEmail = '';
@@ -83,25 +83,28 @@ export class CommunityPage implements OnInit {
   }
   //toggle view: all, friends, groups
   selectAll() {
-    if (this.allSelected = "inactive") {
-      this.allSelected = "activated";
-      this.friendsSelected = "inactive";
-      this.groupsSelected = "inactive";
+    if (this.allSelected == false) {
+      this.allSelected = true;
+      this.friendsSelected = false;
+      this.groupsSelected = false;
     }
+    console.log (this.allSelected, this.friendsSelected, this.groupsSelected);
   }
   selectFriends() {
-    if (this.friendsSelected = "inactive") {
-      this.friendsSelected = "activated";
-      this.allSelected = "inactive";
-      this.groupsSelected = "inactive";
-    }
+    if (this.friendsSelected == false) {
+      this.friendsSelected = true;
+      this.allSelected = false;
+      this.groupsSelected = false;     
+    } 
+    console.log (this.allSelected, this.friendsSelected, this.groupsSelected);
   }
   selectGroups() {
-    if (this.groupsSelected = "inactive") {
-      this.groupsSelected = "activated";
-      this.friendsSelected = "inactive";
-      this.allSelected = "inactive";
+    if (this.groupsSelected == false) {
+      this.groupsSelected = true;
+      this.friendsSelected = false;
+      this.allSelected = false;
     }
+    console.log (this.allSelected, this.friendsSelected, this.groupsSelected);
   }
   //Vorhandene User zum Senden einer Freundschaftsanfrage per Modal anzeigen
   async openAddConnection() {

@@ -3,43 +3,27 @@
     <ion-thumbnail slot="start">
       <img src="../../assets/icon/icon.png">
     </ion-thumbnail>
-    <ion-title>Community</ion-title>    
-    <ion-thumbnail
-    slot="end"
-    *ngIf="currentUserImage == '' || currentUserImage == null"
-    style="padding: 0.5rem;">
-    <img src="../../assets/happy.png">
-  </ion-thumbnail>
-  <ion-thumbnail
-    slot="end"
-    *ngIf="!currentUserImage == '' || !currentUserImage == null"
-    style="padding: 0.5rem;">
-    <img src="{{ currentUserImage }}">
-  </ion-thumbnail>
+    <ion-title>Community</ion-title>
+    <ion-button 
+        slot="end" 
+        routerLink="./profile"
+        color="light">
+     My profile</ion-button>   
+    
   </ion-toolbar>
-
-  <ion-toolbar color="light" *ngIf="groups.length">
-    <div class="button-bar">
-    <ion-button
-      size="small"
-      shape="round"
-      [class]="allSelected"
-      (click)="selectAll()">All
-    </ion-button>
-    <ion-button
-      size="small"
-      shape="round"
-      [class]="friendsSelected"
-      (click)="selectFriends()">Friends
-    </ion-button>
-    <ion-button
-      size="small"
-      shape="round"
-      [class]="groupsSelected"
-      (click)="selectGroups()">Groups
-  </ion-button>
-  </div>
-</ion-toolbar>
+  <ion-toolbar *ngIf="groups.length">
+    <ion-segment value="all">
+      <ion-segment-button value="all" (click)="selectAll()">
+        <ion-label>All</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="friends" (click)="selectFriends()">
+        <ion-label>Friends</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="groups" (click)="selectGroups()">
+        <ion-label>Groups</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
@@ -71,28 +55,38 @@
         (click)="confirmRequest()"></ion-icon>
     </ion-item>
   </ion-card>
-  <ion-button 
-    fill="solid" 
-    expand="block" 
-    color="secondary"
-    (click)="openAddConnection()"
-    >Add a learning friend 
-    <ion-icon name="person" slot="end"></ion-icon>
-  </ion-button>
-  <ion-button 
-    fill="solid" 
-    expand="block" 
-    color="secondary"
-    >Create a learning group
-    <ion-icon name="people" slot="end"></ion-icon>
-</ion-button>
+  <ion-row>
+    <ion-col size="6">
+      <ion-button 
+        fill="solid" 
+        expand="block"
+        size="small"
+        color="secondary">Create a group
+        <ion-icon name="people" slot="end"></ion-icon>
+      </ion-button>
+    </ion-col>
+    <ion-col size="6">
+      <ion-button 
+        fill="solid" 
+        expand="block"
+        size="small"
+        color="secondary"
+        (click)="openAddConnection()">Add a friend 
+        <ion-icon name="person" slot="end"></ion-icon>
+      </ion-button>
+    </ion-col>
+  </ion-row>
 
-<ion-item-divider *ngIf="friends.length" sticky="true">
+<ion-item-divider *ngIf="this.allSelected || this.friendsSelected" sticky="true">
     My learning friends
 </ion-item-divider>
+<ion-item *ngIf="!friends.length">
+  No learning friends yet
+  <ion-icon slot="end" name="musical-notes"></ion-icon>
+</ion-item>
 
-<ion-list *ngFor="let friend of friends">
-  <ion-item routerLink="./friend-detail">
+<ion-list *ngIf="allSelected || friendsSelected">
+  <ion-item *ngFor="let friend of friends" routerLink="./friend-detail/{{friend.id}}">
     <ion-label *ngIf="friend.name == '' || friend.name == null">
       <h2>{{ friend.email }}</h2>
     </ion-label>
@@ -111,7 +105,11 @@
       slot="end"/>
   </ion-item>
 </ion-list>
-<ion-item-divider *ngIf="groups.length" sticky="true">
+<ion-item-divider *ngIf="this.allSelected || this.groupsSelected" sticky="true">
     My learning groups
 </ion-item-divider>
+<ion-item *ngIf="!groups.length">
+  No learning groups yet
+  <ion-icon slot="end" name="musical-notes"></ion-icon>
+</ion-item>
 </ion-content>

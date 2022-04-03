@@ -32,7 +32,6 @@ const routes: Routes = [
     path: 'community',
     loadChildren: () => import('./community/community.module').then( m => m.CommunityPageModule)
   }
-
 ];
 
 @NgModule({

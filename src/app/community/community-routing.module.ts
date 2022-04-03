@@ -17,11 +17,11 @@ const routes: Routes = [
     loadChildren: () => import('./add-connection-modal/add-connection-modal.module').then( m => m.AddConnectionModalPageModule)
   },
   {
-    path: 'friend-detail',
+    path: 'friend-detail/:friendId',
     loadChildren: () => import('./friend-detail/friend-detail.module').then( m => m.FriendDetailPageModule)
   },
   {
-    path: 'group-detail',
+    path: 'group-detail/:groupId',
     loadChildren: () => import('./group-detail/group-detail.module').then( m => m.GroupDetailPageModule)
   }
 ];

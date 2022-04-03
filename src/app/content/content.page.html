@@ -36,21 +36,29 @@
       size="small"
       shape="round"
       [class]="studentVideosSelected"
-      (click)="selectStudentVideos()">Student videos
+      (click)="selectStudentVideos()">Friends videos
   </ion-button>
   </div>
 </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-button
-    routerLink="./add-video"
-    fill="solid" 
-    expand="block" 
-    color="secondary"
-    >Add video 
-    <ion-icon name="videocam" slot="end"></ion-icon>
-</ion-button>
+  <ion-row>
+    <ion-col size="2"></ion-col>
+    <ion-col size="8">
+      <ion-button
+        routerLink="./add-video"
+        fill="solid" 
+        expand="block"
+        size="small"
+        color="secondary"
+        >Add a video 
+        <ion-icon name="videocam" slot="end"></ion-icon>
+      </ion-button>
+    </ion-col>
+    <ion-col size="2"></ion-col>
+  </ion-row>
+  
   <ion-list>
     <ion-item routerLink="./example-detail">
       <ion-label><h2>Example video</h2></ion-label>
@@ -76,7 +84,7 @@
   </ion-list>
 
   <ion-item-divider *ngIf="studentVideos.length" sticky="true">
-      Student videos
+      Learning friends videos
   </ion-item-divider>
   <ion-list *ngIf="studentVideos.length">
     <ion-item>

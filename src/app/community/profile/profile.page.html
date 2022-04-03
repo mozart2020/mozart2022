@@ -7,13 +7,13 @@
     <ion-buttons slot="end">
       <ion-button 
         size="small" color="primary" 
-        *ngIf="currentUserImage == '' || currentUserImage == null">
+        *ngIf="currentUserProfileImage == '' || currentUserProfileImage == null">
         <ion-icon name="happy-outline"></ion-icon>
       </ion-button>      
       <ion-button 
-        *ngIf="!currentUserImage == '' || !currentUserImage == null">
+        *ngIf="!currentUserProfileImage == '' || !currentUserProfileImage == null">
         <ion-thumbnail style="padding: 0.5rem;">
-          <img src="{{ currentUserImage }}">
+          <img src="{{ currentUserProfileImage }}">
         </ion-thumbnail>
       </ion-button>
     </ion-buttons>
@@ -21,13 +21,51 @@
 </ion-header>
 
 <ion-content>
+  <ion-item (click)="openUpdateModal()">
+    <ion-label>
+      <h2>{{ currentUserName }}</h2>
+    </ion-label>
+    <ion-button *ngIf="currentUserName == ''">
+      Add a name to your profile
+    </ion-button>
+    <ion-icon *ngIf="!currentUserName == ''" slot="end" name="create-outline"></ion-icon>
+  </ion-item>
   <ion-card>
-    <img src="{{ currentUserImage }}" width="150px"/>
     <ion-card-header>
-      <ion-card-title>{{ currentUserName }}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      {{ currentUserEmail }}
+      <ion-card-subtitle>About Me</ion-card-subtitle>  
+    </ion-card-header>  
+    <ion-card-content *ngIf="currentUserAboutMe == ''" (click)="openUpdateModal()">
+      <ion-button size="small">
+        Tell the community something about yourself!
+      </ion-button>
+    </ion-card-content>
+    <ion-card-content *ngIf="!currentUserAboutMe == ''" (click)="openUpdateModal()">
+      <ion-icon slot="end" name="create-outline"></ion-icon>
+      {{ currentUserAboutMe }}
     </ion-card-content>
   </ion-card>
+  <ion-item (click)="openUpdateModal()">
+    <ion-icon slot="start" name="earth-outline"></ion-icon>
+    <ion-label>{{ currentUserCountry }}</ion-label>
+    <ion-button *ngIf="currentUserCountry == ''">
+      Add a country to your profile
+    </ion-button>
+    <ion-icon *ngIf="!currentUserCountry == ''" slot="end" name="create-outline"></ion-icon>
+  </ion-item>
+  <ion-item (click)="infoAlert()">
+    <ion-icon slot="start" name="school-outline"></ion-icon>
+    <ion-label>{{ currentUserSubjects }}</ion-label>
+    <ion-button *ngIf="currentUserSubjects == ''">
+      Add subjects to your profile
+    </ion-button>
+    <ion-icon *ngIf="!currentUserSubjects == ''" slot="end" name="create-outline"></ion-icon>
+  </ion-item>
+  <ion-item (click)="infoAlert()">
+    <ion-icon slot="start" name="language-outline"></ion-icon>
+    <ion-label>{{ currentUserLanguages }}</ion-label>
+    <ion-button *ngIf="currentUserLanguages == ''">
+      Add languages to your profile
+    </ion-button>
+    <ion-icon *ngIf="!currentUserLanguages == ''" slot="end" name="create-outline"></ion-icon>
+  </ion-item>
 </ion-content>

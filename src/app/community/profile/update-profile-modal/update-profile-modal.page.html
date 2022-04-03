@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Update your profile</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div>
+    <ion-item>
+      <ion-label position="stacked">Name</ion-label>
+      <ion-input [(ngModel)]="userName"></ion-input>
+    </ion-item> 
+    <ion-item>
+      <ion-label position="stacked">About me</ion-label>
+      <ion-textarea [(ngModel)]="userAboutMe" rows="8"></ion-textarea>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Country</ion-label>
+      <ion-input [(ngModel)]="userCountry"></ion-input>
+    </ion-item> 
+  </div>
+  <ion-row>
+    <ion-col size="6">
+      <ion-button expand="block" (click)="cancel()">
+        Cancel
+      </ion-button>
+    </ion-col>
+    <ion-col size="6">
+      <ion-button expand="block" color="success" (click)="updateUser()">        
+        Ok
+        <ion-icon name="happy-outline" slot="end"></ion-icon>
+      </ion-button>
+    </ion-col>
+  </ion-row>
+  
+  
+</ion-content>

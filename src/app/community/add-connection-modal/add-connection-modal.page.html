@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Add friend:</ion-title>
+    <ion-title>Add a learning friend:</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="close()">Cancel</ion-button>
     </ion-buttons>
@@ -9,12 +9,26 @@
 
 <ion-content>
   <ion-list>
-    <ion-item *ngFor="let user of notConnectedUsers" button (click)="selectUser(user)">
-      <ion-icon name="happy-outline" *ngIf="(user.profileImage == '')"></ion-icon>
-      <ion-avatar>
-        <ion-img [src]="user.profileImage" *ngIf="(user.profileImage !== '')"></ion-img>
-      </ion-avatar>
-      <ion-label class="friends-card"> {{ user.email }}</ion-label>
-    </ion-item>
+    <ion-radio-group (ionChange)="userChange($event)">
+      <ion-item 
+          *ngFor="let user of notConnectedUsers" 
+          (click)="selectUserName(user.name)">
+        <ion-radio slot="start" value="{{user.id}}"></ion-radio>
+        <ion-icon name="happy-outline" *ngIf="(user.profileImage == '')"></ion-icon>
+        <ion-avatar>
+          <ion-img [src]="user.profileImage" *ngIf="(user.profileImage !== '')"></ion-img>
+        </ion-avatar>
+        <ion-label class="friends-card"> {{ user.email }}</ion-label>
+      </ion-item>
+    </ion-radio-group>
   </ion-list>
+  <div *ngIf="selectedUserId != ''">
+    <ion-button 
+      (click)="selectUser()"
+      fill="solid" 
+      expand="block" 
+      color="secondary">Send a friend request to <br>{{ selectedUserName }}
+      <ion-icon name="person" slot="end"></ion-icon>
+    </ion-button>
+  </div>
 </ion-content>

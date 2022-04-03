@@ -7,6 +7,10 @@ const routes: Routes = [
   {
     path: '',
     component: ProfilePage
+  },
+  {
+    path: 'update-profile-modal',
+    loadChildren: () => import('./update-profile-modal/update-profile-modal.module').then( m => m.UpdateProfileModalPageModule)
   }
 ];
 

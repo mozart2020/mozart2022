@@ -34,6 +34,8 @@ export class UserService {
       }
     })
   }
+
+  //// GET USER SECTION ///////////
   getAllUsers() {
     const currentUserId = this.auth.getCurrentUserId();
     const usersRef = collection(this.firestore, 'users');
@@ -82,10 +84,16 @@ export class UserService {
       }),
       map(users => {           // in onAuthStateChanged(), incoked in constructor()
         return users.filter(user => user.id != currentUserId);
-      })
-      
+      })      
     )
   }
+  ////// EDIT USER SECTION ////////////////
+  updateUser(id, name, aboutMe, country) {
+    const userRef = doc(this.firestore, `users/${id}`);
+    updateDoc(userRef, {name: name, aboutMe: aboutMe, country: country});
+  }
+
+  /////// CONNECTION SECTION //////////////////
   checkCurrentUSerConnections() {
     const currentUserId = this.auth.getCurrentUserId();
     const connectionsRef = collection(this.firestore, 'connections');
@@ -115,13 +123,13 @@ export class UserService {
     const currentUserId = this.auth.getCurrentUserId(); //id des anfragenden Users (currentUserID)
     const users = [requestedUserId, currentUserId];
     for (let user of users) { //geht durch die User (userIds) im neuen connection-document
-      const userConnectionRef = doc(this.firestore, `users/${user}`); //referenziert die Collection 'users'
+      const userRef = doc(this.firestore, `users/${user}`); //referenziert die Collection 'users'
       if(user == currentUserId) { //für den requesting user (currentUser);
-        updateDoc(userConnectionRef, {  
+        updateDoc(userRef, {  
           sentConnectionRequests: requestedUserId //muss später als Array behandelt werden: requestingUserId aus dem Array heraus nehmen!!
         });
       } else {                  //für den requested user (currentUser);
-        updateDoc(userConnectionRef, {
+        updateDoc(userRef, {
           receivedConnectionRequests: currentUserId //muss später als Array behandelt werden: currentUserId aus dem Array heraus nehmen!!
         });
       }
@@ -143,19 +151,19 @@ export class UserService {
       //const promises = [];
       for (let user of users) { //geht durch die User (userIds) im neuen connection-document
         console.log('user of users: ', user);
-         const userConnectionRef = doc(this.firestore, `users/${user}`); //referenziert die Collection 'users'
+         const userRef = doc(this.firestore, `users/${user}`); //referenziert die Collection 'users'
          if(user == currentUserId) { //für den requested user (currentUser);
-            updateDoc(userConnectionRef, {  
+            updateDoc(userRef, {  
               friends: arrayUnion(requestingUserId), //fügt den requesting user zum Array-Feld 'friends' hinzu
               receivedConnectionRequests: '' //muss später als Array behandelt werden: requestingUserId aus dem Array heraus nehmen!!
             });
           } else {                  //für den requesting user (currentUser);
-            updateDoc(userConnectionRef, {
+            updateDoc(userRef, {
               friends: arrayUnion(currentUserId), //fügt den requested user zum Array-Feld 'friends' hinzu
               sentConnectionRequests: '' //muss später als Array behandelt werden: currentUserId aus dem Array heraus nehmen!!
             });
           }
-          updateDoc(userConnectionRef, {
+          updateDoc(userRef, {
             connections: arrayUnion(connectionId) //fügt die neue connection den users hinzu, wenn noch nicht vorhanden
           });
       }
@@ -168,13 +176,13 @@ export class UserService {
     const currentUserId = this.auth.getCurrentUserId(); //id des requested users (currentUserId)
     const users = [requestingUserId, currentUserId]; // Ids der requesting und requested User als Array-Variable 'users'
     for (let user of users) { //geht durch die User (userIds) im neuen connection-document
-      const userConnectionRef = doc(this.firestore, `users/${user}`); //referenziert die Collection 'users'
+      const userRef = doc(this.firestore, `users/${user}`); //referenziert die Collection 'users'
       if(user == currentUserId) { //für den requested user (currentUser);
-        updateDoc(userConnectionRef, {  
+        updateDoc(userRef, {  
           receivedConnectionRequests: '' //muss später als Array behandelt werden: requestingUserId aus dem Array heraus nehmen!!
         });
       } else {                  //für den requesting user (currentUser);
-        updateDoc(userConnectionRef, {
+        updateDoc(userRef, {
           sentConnectionRequests: '' //muss später als Array behandelt werden: currentUserId aus dem Array heraus nehmen!!
         });
       }
