@@ -26,7 +26,7 @@ export class UserService {
   constructor(
     private firestore: Firestore,
     private firebaseAuth: Auth,
-    private auth: AuthService    
+    private authService: AuthService    
   ) {
     onAuthStateChanged(this.firebaseAuth, user => {
       if (!user) {
@@ -40,19 +40,18 @@ export class UserService {
     const userRef = doc(this.firestore, `users/${id}`);
     return docData(userRef);
   }
-  getUsersByIds(ids: any) {
-    console.log('getUserByIds in userService, argument ids: ', ids);
-    const check = ids.includes('2yRsFgHKH8PizuM3u3veKfJKkfs2');
-    console.log('HAT ERS GECHECKT: ', check);
+  getUsersByConnectionIds(ids: any) {
+    const currentUserId = this.authService.getCurrentUserId();
     const usersRef = collection(this.firestore, 'users');
     return collectionData(usersRef, { idField: 'id' }).pipe(
       map(users => {
-        return users.filter(user => ids.includes());
+        //filtert die user aller connections des current users heraus zieht den current user davon ab:
+        return users.filter(user => ids.includes(user.id) && user.id != currentUserId);
       })
     )
   }
   getAllUsers() {
-    const currentUserId = this.auth.getCurrentUserId();
+    const currentUserId = this.authService.getCurrentUserId();
     const usersRef = collection(this.firestore, 'users');
     return collectionData(usersRef, { idField: 'id' })
     .pipe(
@@ -74,7 +73,7 @@ export class UserService {
     );
   }
   getAllFriends() {
-    const currentUserId = this.auth.getCurrentUserId();
+    const currentUserId = this.authService.getCurrentUserId();
     const userRef = doc(this.firestore, `users/${currentUserId}`);
     return docData(userRef).pipe(
       switchMap(data => {
@@ -90,7 +89,7 @@ export class UserService {
 /* ||||| get user connections via id-double check betwen docField 'connections' in 
          collection 'users' and collection 'connections' */
   getConnectionsSafeVersion() {
-    const currentUserId = this.auth.getCurrentUserId();
+    const currentUserId = this.authService.getCurrentUserId();
     const userRef = doc(this.firestore, `users/${currentUserId}`);
     return docData(userRef).pipe(
       switchMap(data => {
@@ -106,7 +105,7 @@ export class UserService {
 /* |||||| get user connections via simple scanning collection 'connections'
           for userId in docField 'users' */
   getCurrentUserConnections() {
-    const currentUserId = this.auth.getCurrentUserId();
+    const currentUserId = this.authService.getCurrentUserId();
     const connectionsRef = collection(this.firestore, 'connections');
     const q = query(connectionsRef, where ('users', 'array-contains', currentUserId));
     return collectionData(q, {idField: 'connectionId'});
@@ -132,7 +131,7 @@ export class UserService {
   }
 
   getAllNotFriends() {
-    const currentUserId = this.auth.getCurrentUserId();
+    const currentUserId = this.authService.getCurrentUserId();
     const userRef = doc(this.firestore, `users/${currentUserId}`);
     return docData(userRef).pipe(
       switchMap(data => {
@@ -155,7 +154,7 @@ export class UserService {
 
   /////// CONNECTION SECTION //////////////////
   checkCurrentUSerConnections() {
-    const currentUserId = this.auth.getCurrentUserId();
+    const currentUserId = this.authService.getCurrentUserId();
     const connectionsRef = collection(this.firestore, 'connections');
   }
  
@@ -175,7 +174,7 @@ export class UserService {
   //Senden einer Freundschaftsanfrage:
   requestConnection(requestedUserId) { //id = userId des angefragen Users
     const userDocRef = doc(this.firestore, `users/${requestedUserId}`); //Referenz zum document des angefragten Users
-    const currentUserId = this.auth.getCurrentUserId(); //id des anfragenden Users (currentUserID)
+    const currentUserId = this.authService.getCurrentUserId(); //id des anfragenden Users (currentUserID)
     const users = [requestedUserId, currentUserId];
     for (let user of users) { //geht durch die User (userIds) im neuen connection-document
       const userRef = doc(this.firestore, `users/${user}`); //referenziert die Collection 'users'
@@ -194,7 +193,7 @@ export class UserService {
   }
   //Annehmen einer Freundschaftsanfrage:
   addFriend(requestingUserId) {
-    const currentUserId = this.auth.getCurrentUserId(); //id des requested users (currentUserId)
+    const currentUserId = this.authService.getCurrentUserId(); //id des requested users (currentUserId)
     const connectionsRef = collection(this.firestore, 'connections'); //Referenz zur Collection 'Connections'
     const date = new Date;                          //aktuelles Datum
     const groupName = '';
@@ -229,7 +228,7 @@ export class UserService {
   }
   //Ablehnen einer Freundschaftsanfrage:
   cleanConnectionRequests(requestingUserId) {
-    const currentUserId = this.auth.getCurrentUserId(); //id des requested users (currentUserId)
+    const currentUserId = this.authService.getCurrentUserId(); //id des requested users (currentUserId)
     const users = [requestingUserId, currentUserId]; // Ids der requesting und requested User als Array-Variable 'users'
     for (let user of users) { //geht durch die User (userIds) im neuen connection-document
       const userRef = doc(this.firestore, `users/${user}`); //referenziert die Collection 'users'

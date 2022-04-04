@@ -77,8 +77,8 @@ export class CommunityPage implements OnInit {
       }
     });
     ////getting friends via conections
-    this.getFriends();
-    /////
+    this.getFriends(); //FÜHRT DIE FUNKTION AUS IRGENDEINEM GRUND ZWEI MAL AUS
+    /////                 SIEHE KONSOLE
 
     this.authService.getCurrentUser().subscribe(res => {
       console.log('current user_friends', res.friends);
@@ -94,23 +94,18 @@ export class CommunityPage implements OnInit {
 //getting friends via connections:
 getFriends() {
   const currentUserId = this.authService.getCurrentUserId();
-  this.userService.getCurrentUserConnections().subscribe(res => {
-    console.log('get connections via userService.getConnections(): ', res);
-    this.connections = res;
-    const test = res.forEach(value => {
-      if (value.groupName == '') {
-        console.log('||||||connection user ids: ', value.users);
-        const users = value.users;
-        const friend = users.forEach(id => {
-          if (id != currentUserId) {
-            console.log('current user id: ', currentUserId);
-            console.log('MÜSSTE FRIENDS ID SEIN: ', id);
-          }
-        })
-        /* this.userService.getUsersByConnectionId(value.connectionId).subscribe();
-        this.connectionIds.push(value.connectionId);
-        console.log('current status of connectionIds: ', this.connectionIds); */
+  this.userService.getCurrentUserConnections().subscribe(res => { //lädt alle connections des current users
+    const test = res.forEach(value => { //geht durch alle geladenen connections durch
+      if (value.groupName == '') {      //filtert alle groups weg, friendships bleiben übrig
+        const users = value.users;      //holt sich die user ids als Array
+        const ids = users.forEach(id => {
+          this.connectionIds.push(id);
+          console.log('current value of connectionIds: ', this.connectionIds);
+        });
       }
+    });
+    this.userService.getUsersByConnectionIds(this.connectionIds).subscribe(res => {
+      console.log('friends: ', res); //CHECKEN WIE MAN DAS ASYNCHRON HINKRIEGT
     });
   })
 }
