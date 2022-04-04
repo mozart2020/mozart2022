@@ -79,17 +79,6 @@ export class CommunityPage implements OnInit {
     ////getting friends via conections
     this.getFriends(); //FÜHRT DIE FUNKTION AUS IRGENDEINEM GRUND ZWEI MAL AUS
     /////                 SIEHE KONSOLE
-
-    this.authService.getCurrentUser().subscribe(res => {
-      console.log('current user_friends', res.friends);
-      if(res.friends != undefined) {                            //nur wenn friends vorhanden sind:
-        this.userService.getAllFriends().subscribe(res => {   //wird getAllFriends() aufgerufen
-          this.friends = res;                                 //!!!sollte mit mergeMap oder so besser gelöst werden!!
-          console.log('allfriends_subscribed: ', res);
-        });
-        console.log('several user connections');
-      }
-    });
   }
 //getting friends via connections:
 getFriends() {
@@ -98,13 +87,14 @@ getFriends() {
     const test = res.forEach(value => { //geht durch alle geladenen connections durch
       if (value.groupName == '') {      //filtert alle groups weg, friendships bleiben übrig
         const users = value.users;      //holt sich die user ids als Array
-        const ids = users.forEach(id => {
+        users.forEach(id => {
           this.connectionIds.push(id);
           console.log('current value of connectionIds: ', this.connectionIds);
         });
       }
     });
     this.userService.getUsersByConnectionIds(this.connectionIds).subscribe(res => {
+      this.friends = res;
       console.log('friends: ', res); //CHECKEN WIE MAN DAS ASYNCHRON HINKRIEGT
     });
   })
