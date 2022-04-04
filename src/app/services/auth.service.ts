@@ -43,7 +43,7 @@ export class AuthService {
       const provider = new GoogleAuthProvider();
       const credentials = signInWithPopup(this.auth, provider);
       const email = (await (credentials)).user.email;
-      const profileImage = await this.getUserPhotoUrl();
+      const profileImage = await this.getCurrentUserPhotoUrl();
       const name = await this.getCurrentUserName();
       const userDoc = doc(this.firestore, `users/${(await credentials).user.uid}`);
       await updateDoc(userDoc, { 
@@ -101,7 +101,7 @@ export class AuthService {
   getCurrentUserName() {
     return this.auth.currentUser.displayName; //gets name directly from firebase Auth
   }
-  getUserPhotoUrl() { //from Firebase Auth
+  getCurrentUserPhotoUrl() { //from Firebase Auth
     return this.auth.currentUser.photoURL;
   }
   getCurrentUser() { //from Firestore 'users'
@@ -110,9 +110,5 @@ export class AuthService {
     return docData(userRef).pipe(
       takeUntil(this.logout$)
     );
-  }
-  getUserById(id) { //from Firestore 'users'
-    const userRef = doc(this.firestore, `users/${id}`);
-    return docData(userRef);
   }
 }

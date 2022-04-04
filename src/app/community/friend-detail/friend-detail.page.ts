@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-friend-detail',
@@ -20,7 +21,7 @@ export class FriendDetailPage implements OnInit {
   constructor(
     private alertCtrl: AlertController,
     private activatedRoute: ActivatedRoute,
-    private authService: AuthService
+    private userService: UserService
   ) { }
 
   ngOnInit() {
@@ -29,7 +30,7 @@ export class FriendDetailPage implements OnInit {
   getFriend() {
     const id = this.activatedRoute.snapshot.params['friendId'];
     console.log('ActivatedRoute got: ', id);
-    this.authService.getUserById(id)
+    this.userService.getUserById(id)
     .subscribe(res => {
       this.friendEmail = res.email;
       if (res.profileImage != undefined) {

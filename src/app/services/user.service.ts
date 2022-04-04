@@ -36,6 +36,21 @@ export class UserService {
   }
 
   //// GET USER SECTION ///////////
+  getUserById(id) { //from Firestore 'users'
+    const userRef = doc(this.firestore, `users/${id}`);
+    return docData(userRef);
+  }
+  getUsersByIds(ids: any) {
+    console.log('getUserByIds in userService, argument ids: ', ids);
+    const check = ids.includes('2yRsFgHKH8PizuM3u3veKfJKkfs2');
+    console.log('HAT ERS GECHECKT: ', check);
+    const usersRef = collection(this.firestore, 'users');
+    return collectionData(usersRef, { idField: 'id' }).pipe(
+      map(users => {
+        return users.filter(user => ids.includes());
+      })
+    )
+  }
   getAllUsers() {
     const currentUserId = this.auth.getCurrentUserId();
     const usersRef = collection(this.firestore, 'users');
@@ -71,6 +86,51 @@ export class UserService {
       })
     )
   }
+
+/* ||||| get user connections via id-double check betwen docField 'connections' in 
+         collection 'users' and collection 'connections' */
+  getConnectionsSafeVersion() {
+    const currentUserId = this.auth.getCurrentUserId();
+    const userRef = doc(this.firestore, `users/${currentUserId}`);
+    return docData(userRef).pipe(
+      switchMap(data => {
+        console.log('currentUser data via getAllFriendsNew(): ', data);
+        const userConnections = data.connections;
+        console.log('currentUser connections via getAllFriendsNew(): ', userConnections);
+        const connectionsRef = collection(this.firestore, 'connections');
+        const q = query(connectionsRef, where(documentId(), 'in', userConnections));
+        return collectionData(q, { idField: 'id'});
+      })
+    )
+  } 
+/* |||||| get user connections via simple scanning collection 'connections'
+          for userId in docField 'users' */
+  getCurrentUserConnections() {
+    const currentUserId = this.auth.getCurrentUserId();
+    const connectionsRef = collection(this.firestore, 'connections');
+    const q = query(connectionsRef, where ('users', 'array-contains', currentUserId));
+    return collectionData(q, {idField: 'connectionId'});
+  }
+  getUsersByConnectionId(id) {
+    const connectionRef = doc(this.firestore, `connections/${id}`);
+    return docData(connectionRef).pipe(
+      switchMap(data => {
+        const connectionUsers = data.users;
+        const usersRef = collection(this.firestore, 'users');
+        const q = query(usersRef, where(documentId(), 'in', connectionUsers));
+        return collectionData(q, {idField: 'userId'});
+      }),
+      map(users => console.log('wir befinden uns in getUserByConnectionId: ', users)))
+      /*
+      .pipe(
+      takeUntil(this.logout$), //returns Data until logout: Subject logout$ emits value
+      map(users => {           // in onAuthStateChanged(), incoked in constructor()
+        return users.filter(user => user.id != currentUserId);
+      })
+    );
+      */
+  }
+
   getAllNotFriends() {
     const currentUserId = this.auth.getCurrentUserId();
     const userRef = doc(this.firestore, `users/${currentUserId}`);
@@ -98,12 +158,7 @@ export class UserService {
     const currentUserId = this.auth.getCurrentUserId();
     const connectionsRef = collection(this.firestore, 'connections');
   }
-  getCurrentUserConnections() {
-    const currentUserId = this.auth.getCurrentUserId();
-    const connectionsRef = collection(this.firestore, 'connections');
-    const q = query(connectionsRef, where ('users', 'array-contains', currentUserId));
-    return collectionData(q, {idField: 'connectionId'});
-  }
+ 
   getFriendsIds() {
     this.getCurrentUserConnections().subscribe( userConnections => {
     const userArrays = []
@@ -138,13 +193,14 @@ export class UserService {
     return updateDoc(userDocRef, { connectionRequests: currentUserId }); //zu Array.push umwandeln
   }
   //Annehmen einer Freundschaftsanfrage:
-  addConnection(requestingUserId) {
+  addFriend(requestingUserId) {
     const currentUserId = this.auth.getCurrentUserId(); //id des requested users (currentUserId)
     const connectionsRef = collection(this.firestore, 'connections'); //Referenz zur Collection 'Connections'
     const date = new Date;                          //aktuelles Datum
+    const groupName = '';
     const users = [requestingUserId, currentUserId]; // Ids der requesting und requested User als Array-Variable 'users'
     const promises = [];
-    return addDoc(connectionsRef,{ date, users }).then(res =>{ //erstellt eine neue Connection
+    return addDoc(connectionsRef,{ date, groupName, users }).then(res =>{ //erstellt eine neue Connection
       console.log('created connection: ', res);                 // mit date und user
       const connectionId = res.id;                  //holt sich die Connections Id in die Variable 'connectionId'
       console.log('connectionId: ;', connectionId)

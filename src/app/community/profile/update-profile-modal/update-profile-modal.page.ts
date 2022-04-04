@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
-import { AuthService } from 'src/app/services/auth.service';
 import { ModalController } from '@ionic/angular';
 
 @Component({
@@ -16,12 +15,11 @@ export class UpdateProfileModalPage implements OnInit {
 
   constructor(
     private userService: UserService,
-    private authService: AuthService,
     private modalCtrl: ModalController
   ) { }
 
   ngOnInit() {
-    this.authService.getUserById(this.id).subscribe(res => {
+    this.userService.getUserById(this.id).subscribe(res => {
       this.userName = res.name;
       console.log('update profile modal userName in ngOnInit: ', this.userName);
       this.userAboutMe = res.aboutMe;

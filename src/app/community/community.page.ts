@@ -19,6 +19,10 @@ export class CommunityPage implements OnInit {
   friendsIds = [];
   friends = [];
   groups = [];
+
+  connections = [];
+  connectionIds = [];
+
   allSelected = true;
   friendsSelected = false;
   groupsSelected = false;
@@ -30,6 +34,8 @@ export class CommunityPage implements OnInit {
   sentRequestImage = '';
   subscriptions = new Subscription();
   logout$: Subject<boolean> = new Subject<boolean>();
+
+  
 
   constructor(
     private modalCtrl: ModalController,
@@ -58,18 +64,22 @@ export class CommunityPage implements OnInit {
       }
       //checkt, ob Freundschaftsanfragen vorliegen:
       if (this.receivedRequestId !== '') { //wenn ja, werden die Daten geholt:
-        this.authService.getUserById(this.receivedRequestId).subscribe(res => { //!!!später mit switchMap um !!!
+        this.userService.getUserById(this.receivedRequestId).subscribe(res => { //!!!später mit switchMap um !!!
           this.receivedRequestImage = res.profileImage;
           this.receivedRequestEmail = res.email;
         })
       }
      if (this.sentRequestId !== '') {
-        this.authService.getUserById(this.sentRequestId).subscribe (res => {
+        this.userService.getUserById(this.sentRequestId).subscribe (res => {
           this.sentRequestEmail = res.email;
           this.sentRequestImage = res.profileImage;
         })
       }
     });
+    ////getting friends via conections
+    this.getFriends();
+    /////
+
     this.authService.getCurrentUser().subscribe(res => {
       console.log('current user_friends', res.friends);
       if(res.friends != undefined) {                            //nur wenn friends vorhanden sind:
@@ -81,6 +91,30 @@ export class CommunityPage implements OnInit {
       }
     });
   }
+//getting friends via connections:
+getFriends() {
+  const currentUserId = this.authService.getCurrentUserId();
+  this.userService.getCurrentUserConnections().subscribe(res => {
+    console.log('get connections via userService.getConnections(): ', res);
+    this.connections = res;
+    const test = res.forEach(value => {
+      if (value.groupName == '') {
+        console.log('||||||connection user ids: ', value.users);
+        const users = value.users;
+        const friend = users.forEach(id => {
+          if (id != currentUserId) {
+            console.log('current user id: ', currentUserId);
+            console.log('MÜSSTE FRIENDS ID SEIN: ', id);
+          }
+        })
+        /* this.userService.getUsersByConnectionId(value.connectionId).subscribe();
+        this.connectionIds.push(value.connectionId);
+        console.log('current status of connectionIds: ', this.connectionIds); */
+      }
+    });
+  })
+}
+
   //toggle view: all, friends, groups
   selectAll() {
     if (this.allSelected == false) {
@@ -121,7 +155,7 @@ export class CommunityPage implements OnInit {
     }                                                   // wird an die Funktion "requestConnection()" übergeben
   }
   confirmRequest() { 
-    this.userService.addConnection(this.receivedRequestId); //hinkünftig connectionRequestId aus dem Array connectionRequests (collection 'user') filtern
+    this.userService.addFriend(this.receivedRequestId); //hinkünftig connectionRequestId aus dem Array connectionRequests (collection 'user') filtern
   }
   declineRequest() {
     this.userService.cleanConnectionRequests(this.receivedRequestId);

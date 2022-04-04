@@ -59,7 +59,7 @@ export class ProfilePage implements OnInit {
   async infoAlert() {
     const alert = await this.alertCtrl.create({
       header: 'subjects - languages',
-      subHeader: 'Features "Adding&Updating subjects and languages are in progress.',
+      subHeader: 'Features "Adding&Updating subjects and languages" are in progress.',
       message: 'Implementation of language and subject pickers possibly necessary. Same to country, actually.',
       buttons: ['OK']
     });
