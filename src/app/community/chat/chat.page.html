@@ -1,9 +1,42 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Chat</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home/community"></ion-back-button>
+    </ion-buttons>
+   <ion-title>{{ friendName }}</ion-title>
+   <ion-title *ngIf="friendName == ''">{{ friendEmail }}</ion-title>
+   <ion-icon slot="end" name="camera-outline" size="large"></ion-icon>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding">
+  <ion-row *ngFor="let message of messages">
 
+    <ion-col size="9" size-md="6" *ngIf="message.from !== currentUserId" class="message other-message">
+      <span style="color: black;">{{ message.msg }}
+        <img [src]="message.file" *ngIf="message.file">
+      </span>
+      <div class="other-time ion-text-right"><br>{{ message.createdAt?.toMillis() | date:'short' }}</div>
+    </ion-col>
+
+    <ion-col offset="3" offset-md="6" size="9" size-md="6" *ngIf="message.from === currentUserId" class="message my-message">
+      <span>{{ message.msg }}
+        <img [src]="message.file" *ngIf="message.file">
+      </span>
+      <div class="my-time ion-text-right"><br>{{ message.createdAt?.toMillis() | date:'short' }}</div>
+    </ion-col>
+
+  </ion-row>
 </ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-row class="ion-align-items-end">
+      <ion-col size="10">
+        <ion-textarea class="message-input" autoGrow="true" rows="1" [(ngModel)]="msg"></ion-textarea>
+      </ion-col>
+      <ion-col size="1" (click)="sendMsg()">
+        <ion-icon name="send-outline" size="large"></ion-icon>  
+      </ion-col>          
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

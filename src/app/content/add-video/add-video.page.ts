@@ -115,10 +115,9 @@ export class AddVideoPage implements OnInit {
   }
   addVideo() {
     this.takeVideoStatus = true;
-    this.date = serverTimestamp();
     const title = this.titleAndNotes.get('title').value;
     const notes = this.titleAndNotes.get('notes').value;
-    this.videoService.addVideo(this.date, title, notes);
+    this.videoService.addVideo(title, notes);
     this.uploadVideo();
   }
   

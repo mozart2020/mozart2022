@@ -10,8 +10,10 @@ import {
   updateDoc, 
   docData, 
   query, 
-  where, 
-  documentId
+  where,
+  orderBy,
+  documentId,
+  serverTimestamp
 } from '@angular/fire/firestore';
 import { Subject } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
@@ -61,10 +63,7 @@ export class UserService {
       })
     )
   }
-  getNonFriends() {
-
-  }
-  
+ 
   getPublicTeachers() {
     const usersRef = collection(this.firestore, 'users');
     console.log('logout$: ', this.logout$);
@@ -76,8 +75,10 @@ export class UserService {
       })
     );
   }
-  
-  
+
+  getNonFriends() {
+
+  }  
   getAllNotFriends() {
     const currentUserId = this.authService.getCurrentUserId();
     const userRef = doc(this.firestore, `users/${currentUserId}`);
@@ -108,7 +109,6 @@ export class UserService {
     const q = query(connectionsRef, where ('users', 'array-contains', currentUserId));
     return collectionData(q, {idField: 'connectionId'});
   }
-
   requestConnection(requestedUserId) { //id = userId des angefragen Users
     const userDocRef = doc(this.firestore, `users/${requestedUserId}`); //Referenz zum document des angefragten Users
     const currentUserId = this.authService.getCurrentUserId(); //id des anfragenden Users (currentUserID)
@@ -132,11 +132,12 @@ export class UserService {
   addFriend(requestingUserId) {
     const currentUserId = this.authService.getCurrentUserId(); //id des requested users (currentUserId)
     const connectionsRef = collection(this.firestore, 'connections'); //Referenz zur Collection 'Connections'
-    const date = new Date;                          //aktuelles Datum
-    const groupName = '';
     const users = [requestingUserId, currentUserId]; // Ids der requesting und requested User als Array-Variable 'users'
     const promises = [];
-    return addDoc(connectionsRef,{ date, groupName, users }).then(res =>{ //erstellt eine neue Connection
+    return addDoc(connectionsRef,{ 
+        date: serverTimestamp(), 
+        groupName: '', 
+        users }).then(res =>{ //erstellt eine neue Connection
       console.log('created connection: ', res);                 // mit date, groupName und user
       const connectionId = res.id;                  //holt sich die Connections Id in die Variable 'connectionId'
       console.log('connectionId: ;', connectionId)
@@ -158,8 +159,7 @@ export class UserService {
           /* updateDoc(userRef, {
             connections: arrayUnion(connectionId) //fügt die neue connection den users hinzu, wenn noch nicht vorhanden
           }); */
-      }
-    
+      }    
       return Promise.all(promises);
     });
   }
@@ -181,4 +181,24 @@ export class UserService {
     }
   }
 
+  ////////////// CHAT SECTION //////////////////////
+  getConnectionInfo(connectionId) {
+    const connectionRef = doc(this.firestore, `connections/${connectionId}`);
+    return docData(connectionRef);
+  }
+  getChatMessages(connectionId) {
+    const messagesRef = collection(this.firestore, `connections/${connectionId}/messages`);
+    const q = query(messagesRef, orderBy('createdAt'));
+    return collectionData(q, { idField: 'id' });
+  }
+  addMessage(connectionId, msg) {
+    const userId = this.authService.getCurrentUserId();
+    const messagesRef = collection(this.firestore, `connections/${connectionId}/messages`);
+    return addDoc(messagesRef, {
+      from: userId,
+      msg,
+      createdAt: serverTimestamp()
+    }); 
+  }
 }
+

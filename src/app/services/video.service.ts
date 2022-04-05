@@ -12,7 +12,8 @@ import {
   docData, 
   query, 
   where, 
-  documentId
+  documentId,
+  serverTimestamp
 } from '@angular/fire/firestore';
 import { orderBy } from 'firebase/firestore';
 
@@ -82,11 +83,11 @@ export class VideoService {
   }
 
   //Firebase section:
-  addVideo(date, title, notes) {
+  addVideo(title, notes) {
     const userId = this.auth.getCurrentUserId();
     const videosRef = collection(this.firestore, `users/${userId}/videos`);
     return addDoc(videosRef, { 
-      date,
+      date: serverTimestamp,
       title,
       notes
     }).then(res => {

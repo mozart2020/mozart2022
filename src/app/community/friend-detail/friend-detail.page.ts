@@ -9,9 +9,11 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./friend-detail.page.scss'],
 })
 export class FriendDetailPage implements OnInit {
+  friendId: string;
+  connectionId: string;
+  friendEmail: string;
   friendProfileImage = '';
   friendName = '';
-  friendEmail = '';
   friendAboutMe = '';
   friendCountry = '';
   friendLanguages: string = '';
@@ -25,12 +27,14 @@ export class FriendDetailPage implements OnInit {
 
   ngOnInit() {
     this.getFriend();
+    this.getConnectionId();
   }
   getFriend() {
     const id = this.activatedRoute.snapshot.params['friendId'];
     console.log('ActivatedRoute got: ', id);
     this.userService.getUserById(id)
     .subscribe(res => {
+      this.friendId = id;
       this.friendEmail = res.email;
       if (res.profileImage != undefined) {
         this.friendProfileImage = res.profileImage;
@@ -55,6 +59,22 @@ export class FriendDetailPage implements OnInit {
   }
   removeFriend() {
 
+  }
+  getConnectionId() {
+    //const currentUserId = this.authService.getCurrentUserId();
+    this.userService.getCurrentUserConnections().subscribe(res => { //lädt alle connections des current users
+      const test = res.forEach(value => { //geht durch alle geladenen connections durch
+        if (value.groupName == '') {      //filtert alle groups weg, friendships bleiben übrig
+          const users = value.users;      //holt sich die user ids als Array
+          users.forEach(id => {
+            if(id == this.friendId) {
+              this.connectionId = value.connectionId;
+              console.log(this.connectionId);
+            }
+          });
+        }
+      });
+    })
   }
   async presentAlert() {
     const alert = await this.alertCtrl.create({

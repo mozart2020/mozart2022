@@ -25,7 +25,7 @@ const routes: Routes = [
     loadChildren: () => import('./group-detail/group-detail.module').then( m => m.GroupDetailPageModule)
   },
   {
-    path: 'chat',
+    path: 'chat/:id',
     loadChildren: () => import('./chat/chat.module').then( m => m.ChatPageModule)
   }
 ];
