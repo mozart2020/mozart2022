@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
@@ -9,6 +9,7 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./add-connection-modal.page.scss'],
 })
 export class AddConnectionModalPage implements OnInit {
+  @Input() connectionIds: any;
   notConnectedUsers=[];
   selectedUserId: string = '';
   selectedUserName: string = '';
@@ -20,21 +21,10 @@ export class AddConnectionModalPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.authService.getCurrentUser().subscribe(res => {
-      console.log('current user_friends', res.friends);
-      if(res.friends == undefined) {                          //nur wenn keine friends vorhanden sind:
-        this.userService.getAllUsers().subscribe(res => {   //wird getAllUsers() aufgerufen
-          this.notConnectedUsers = res;                   //!!!sollte mit mergeMap oder so besser gelöst werden!!
-          console.log('all Users except me: ', res);
-        });
-      }
-      if(res.friends !== undefined) {                           //nur wenn friends vorhanden sind:
-        this.userService.getAllNotFriends().subscribe(res => { //wird getAllNotFriends() aufgerufen
-          this.notConnectedUsers = res;                //!!!sollte mit mergeMap oder so besser gelöst werden!!
-          console.log('all Not Friends: ', res);
-        });
-      }
-    });
+    //all users - friends excluded
+    this.userService.getUsersExcludedByConnectionIds(this.connectionIds).subscribe(res => {
+      this.notConnectedUsers = res;
+    })
   }
   close() {
     this.modalCtrl.dismiss();

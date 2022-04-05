@@ -37,7 +37,7 @@ export class UserService {
     })
   }
 
-  //// GET USER SECTION ///////////
+////// GET USER SECTION ///////////
   getAllUsers() {
     const currentUserId = this.authService.getCurrentUserId();
     const usersRef = collection(this.firestore, 'users');
@@ -63,7 +63,16 @@ export class UserService {
       })
     )
   }
- 
+  getUsersExcludedByConnectionIds(ids: any) { //gibt einen array of users aus
+    const currentUserId = this.authService.getCurrentUserId();
+    const usersRef = collection(this.firestore, 'users');
+    return collectionData(usersRef, { idField: 'id' }).pipe(
+      map(users => {
+        //filtert die user aller connections des current users heraus zieht den current user davon ab:
+        return users.filter(user => !ids.includes(user.id) && user.id != currentUserId);
+      })
+    )
+  } 
   getPublicTeachers() {
     const usersRef = collection(this.firestore, 'users');
     console.log('logout$: ', this.logout$);
@@ -76,32 +85,13 @@ export class UserService {
     );
   }
 
-  getNonFriends() {
-
-  }  
-  getAllNotFriends() {
-    const currentUserId = this.authService.getCurrentUserId();
-    const userRef = doc(this.firestore, `users/${currentUserId}`);
-    return docData(userRef).pipe(
-      switchMap(data => {
-        const userFriends = data.friends;
-        console.log('data.friends: ', userFriends);
-        const friendsRef = collection(this.firestore, 'users');
-        const q = query(friendsRef, where(documentId(), 'not-in', userFriends));
-        return collectionData(q, { idField: 'id' });
-      }),
-      map(users => {           // in onAuthStateChanged(), incoked in constructor()
-        return users.filter(user => user.id != currentUserId);
-      })      
-    )
-  }
-  ////// EDIT USER SECTION ////////////////
+//////// EDIT USER SECTION ////////////////
   updateUser(id, name, aboutMe, country) {
     const userRef = doc(this.firestore, `users/${id}`);
     updateDoc(userRef, {name: name, aboutMe: aboutMe, country: country});
   }
 
-  ///////Connection-Section:
+/////////CONNECTION SECTION//////////////
   //Senden einer Freundschaftsanfrage:
   getCurrentUserConnections() {
     const currentUserId = this.authService.getCurrentUserId();
@@ -125,7 +115,6 @@ export class UserService {
         });
       }
     }
-    console.log('requestConnection userDocRef: ', userDocRef)
     return updateDoc(userDocRef, { connectionRequests: currentUserId }); //zu Array.push umwandeln
   }
   //Annehmen einer Freundschaftsanfrage:
@@ -156,9 +145,6 @@ export class UserService {
               sentConnectionRequests: '' //muss später als Array behandelt werden: currentUserId aus dem Array heraus nehmen!!
             });
           }
-          /* updateDoc(userRef, {
-            connections: arrayUnion(connectionId) //fügt die neue connection den users hinzu, wenn noch nicht vorhanden
-          }); */
       }    
       return Promise.all(promises);
     });
@@ -181,7 +167,7 @@ export class UserService {
     }
   }
 
-  ////////////// CHAT SECTION //////////////////////
+//////////////// CHAT SECTION //////////////////////
   getConnectionInfo(connectionId) {
     const connectionRef = doc(this.firestore, `connections/${connectionId}`);
     return docData(connectionRef);

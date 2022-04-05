@@ -99,6 +99,9 @@ getFriends() {
     });
   })
 }
+getNonFriends() {
+  
+}
 
   //toggle view: all, friends, groups
   selectAll() {
@@ -127,8 +130,10 @@ getFriends() {
   }
   //Vorhandene User zum Senden einer Freundschaftsanfrage per Modal anzeigen
   async openAddConnection() {
+    console.log('Data for componentProps: ', this.connectionIds);
     const modal = await this.modalCtrl.create({
       component: AddConnectionModalPage,
+      componentProps: { connectionIds: this.connectionIds},
       swipeToClose: true,
       presentingElement: this.routerOutlet.nativeEl
     });

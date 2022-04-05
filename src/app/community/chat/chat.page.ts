@@ -1,9 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { IonContent } from '@ionic/angular';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
+import { VideoService } from 'src/app/services/video.service';
 
 @Component({
   selector: 'app-chat',
@@ -23,7 +25,8 @@ export class ChatPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private authService: AuthService,
-    private userService: UserService) { }
+    private userService: UserService,
+    private videoService: VideoService) { }
 
   ngOnInit() {
     this.connectionId = this.route.snapshot.paramMap.get('id');
@@ -35,7 +38,9 @@ export class ChatPage implements OnInit {
         }
       }
       console.log('messages: ', this.messages);
-      this.content.scrollToBottom(400);
+      setTimeout(() => {
+        this.content.scrollToBottom(400);
+      }, 400)
     });
     this.userService.getConnectionInfo(this.connectionId).subscribe(res => {
       console.log('user ids of connection: ', res.users);
@@ -57,5 +62,16 @@ export class ChatPage implements OnInit {
       this.msg='';
       this.content.scrollToBottom(300);
     })
+  }
+  async selectImage() {
+    const image = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      source: CameraSource.Camera,
+      resultType: CameraResultType.Base64
+    });
+    if(image) {
+      this.videoService.addImageMsg(image.base64String, this.connectionId);
+    }
   }
 }

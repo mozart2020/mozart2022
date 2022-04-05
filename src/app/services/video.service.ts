@@ -16,6 +16,7 @@ import {
   serverTimestamp
 } from '@angular/fire/firestore';
 import { orderBy } from 'firebase/firestore';
+import { getDownloadURL, ref, Storage, uploadString } from '@angular/fire/storage';
 
 export interface VideoInfo {
   date: string;
@@ -32,6 +33,7 @@ export class VideoService {
 
   constructor(
     private firestore: Firestore,
+    private storage: Storage,
     private auth: AuthService
   ) { }
 
@@ -113,6 +115,22 @@ export class VideoService {
     const userId = this.auth.getCurrentUserId();
     const videoDocRef = doc(this.firestore, `users/${userId}/videos/${id}`);
     return docData(videoDocRef, { idField: 'id' });
+  }
+  ///////////// IMAGE SECTION ///////////////////
+  async addImageMsg(base64, connectionId) {
+    const userId = this.auth.getCurrentUserId();
+    const imageName = `${new Date().getTime}_${userId}.jpeg`
+    const storageRef = ref(this.storage, imageName);
+    const uploadResult = await uploadString(storageRef, base64, 'base64',{
+      contentType: 'image/jpeg'
+    });
+    console.log('upload result: ', uploadResult)
+    const url = await getDownloadURL(uploadResult.ref);
+    const messagesRef = collection(this.firestore, `connections/${connectionId}/messages`);
+    return addDoc(messagesRef, {
+      from: userId,
+      file: url,
+      createdAt: serverTimestamp() });    
   }
 
   
