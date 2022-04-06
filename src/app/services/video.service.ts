@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { LoadingController } from '@ionic/angular';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { AuthService } from './auth.service';
 import { 
@@ -32,6 +33,7 @@ export class VideoService {
   justAddedVideoID: string;
 
   constructor(
+    private loadingCtrl: LoadingController,
     private firestore: Firestore,
     private storage: Storage,
     private auth: AuthService
@@ -59,14 +61,6 @@ export class VideoService {
     };
     reader.readAsDataURL(blob);    
   });
-  /* async getVideoBase64(fullPath) {
-    const path = fullPath.substr(fullPath.lastIndexOf('/') + 1);
-    const file = await Filesystem.readFile({
-      path: path,
-      directory: Directory.Data
-    });
-    return file.data;
-  } */
   async getVideoBase64Url(fullPath) {
     const path = fullPath.substr(fullPath.lastIndexOf('/') + 1);
     const file = await Filesystem.readFile({
@@ -118,20 +112,26 @@ export class VideoService {
   }
   ///////////// IMAGE SECTION ///////////////////
   async addImageMsg(base64, connectionId) {
+    const loading = await this.loadingCtrl.create({
+      message: 'Uploading...',
+    });
+    await loading.present();
     const userId = this.auth.getCurrentUserId();
-    const imageName = `${new Date().getTime}_${userId}.jpeg`
+    const imageName = `${new Date().getTime()}_${userId}.jpeg`;
+    console.log('image name: ', imageName);
     const storageRef = ref(this.storage, imageName);
     const uploadResult = await uploadString(storageRef, base64, 'base64',{
       contentType: 'image/jpeg'
     });
-    console.log('upload result: ', uploadResult)
+    if (uploadResult) {loading.dismiss();};
     const url = await getDownloadURL(uploadResult.ref);
     const messagesRef = collection(this.firestore, `connections/${connectionId}/messages`);
-    return addDoc(messagesRef, {
+   return addDoc(messagesRef, {
       from: userId,
       file: url,
-      createdAt: serverTimestamp() });    
+      createdAt: serverTimestamp() });
   }
+
 
   
 }

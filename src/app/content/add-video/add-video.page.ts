@@ -7,7 +7,6 @@ import { VideoService } from 'src/app/services/video.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
-import { serverTimestamp } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-add-video',

@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, } from '@ionic/angular';
-import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -12,10 +11,9 @@ export class AddConnectionModalPage implements OnInit {
   @Input() connectionIds: any;
   notConnectedUsers=[];
   selectedUserId: string = '';
-  selectedUserName: string = '';
+  selectedUserDisplayedString: string = '';
 
   constructor(
-    private authService: AuthService,
     private userService: UserService, 
     private modalCtrl: ModalController
   ) { }
@@ -32,14 +30,13 @@ export class AddConnectionModalPage implements OnInit {
   selectUser() {
    this.modalCtrl.dismiss({
       user: { id: this.selectedUserId }
-    })
-    console.log('selectUser(user): ');
+    });
   }
-  selectUserName(userName) {
-    console.log('user name : ', userName);
-    this.selectedUserName = userName;
-    if(this.selectedUserName == '') {
-      this.selectedUserName = 'selected user';
+  selectUserName(userName, userEmail) {
+    console.log('user name : ', userName, 'user email: ', userEmail);
+    this.selectedUserDisplayedString = userName;
+    if(this.selectedUserDisplayedString == '') {
+      this.selectedUserDisplayedString = userEmail;
     }
   }
   userChange(event) {

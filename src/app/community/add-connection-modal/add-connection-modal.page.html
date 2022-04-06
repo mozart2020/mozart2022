@@ -12,23 +12,27 @@
     <ion-radio-group (ionChange)="userChange($event)">
       <ion-item 
           *ngFor="let user of notConnectedUsers" 
-          (click)="selectUserName(user.name)">
+          (click)="selectUserName(user.name, user.email)">
         <ion-radio slot="start" value="{{user.id}}"></ion-radio>
-        <ion-icon name="happy-outline" *ngIf="(user.profileImage == '')"></ion-icon>
+        <ion-avatar *ngIf="(user.profileImage == '')">
+          <ion-icon name="happy-outline" size="large"></ion-icon>
+        </ion-avatar>        
         <ion-avatar>
           <ion-img [src]="user.profileImage" *ngIf="(user.profileImage !== '')"></ion-img>
         </ion-avatar>
-        <ion-label class="friends-card"> {{ user.email }}</ion-label>
+        <ion-label class="friends-card"> {{ user.name == '' ? user.email : user.name }}</ion-label>
       </ion-item>
     </ion-radio-group>
   </ion-list>
+</ion-content>
+<ion-footer>
   <div *ngIf="selectedUserId != ''">
     <ion-button 
       (click)="selectUser()"
       fill="solid" 
       expand="block" 
-      color="secondary">Send a friend request to <br>{{ selectedUserName }}
+      color="secondary">Send a friend request to <br>{{ selectedUserDisplayedString }}
       <ion-icon name="person" slot="end"></ion-icon>
     </ion-button>
   </div>
-</ion-content>
+</ion-footer>

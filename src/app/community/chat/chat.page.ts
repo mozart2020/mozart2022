@@ -63,14 +63,15 @@ export class ChatPage implements OnInit {
       this.content.scrollToBottom(300);
     })
   }
-  async selectImage() {
+  async takeImage() {
     const image = await Camera.getPhoto({
-      quality: 90,
+      quality: 60,
       allowEditing: false,
       source: CameraSource.Camera,
       resultType: CameraResultType.Base64
     });
     if(image) {
+      console.log('image: ', image.base64String)
       this.videoService.addImageMsg(image.base64String, this.connectionId);
     }
   }
