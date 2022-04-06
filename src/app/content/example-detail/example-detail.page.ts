@@ -100,11 +100,13 @@ export class ExampleDetailPage implements OnInit {
 playPauseStudentVideo() {
   if (this.studentVideo.nativeElement.paused == true) {
     this.studentVideo.nativeElement.play();
+    console.log(this.studentVideo.nativeElement.duration);
     //this.cleanEnabledPlayBtns();
     this.cleanFeedbackInfoStatus()
   }
   else {     
     this.studentVideo.nativeElement.pause();
+    console.log(this.studentVideo.nativeElement.duration);
     //this.cleanEnabledPlayBtns();  
     this.cleanFeedbackInfoStatus()
   }

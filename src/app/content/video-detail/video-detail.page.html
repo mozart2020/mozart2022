@@ -8,14 +8,20 @@
 </ion-header>
 
 <ion-content>
+  <video
+    #studentVideo
+    src="{{videoUrl}}"
+    width="100%"
+    playsinline
+    class="video"
+    controls>
+  </video>
   <ion-item>
-    <video
-      #studentVideo
-      src="{{videoUrl}}"
-      width="90%"
-      playsinline
-      class="video"
-      controls>
-    </video>
+    <h1> {{ videoTitle }}</h1>
+
   </ion-item>
+  <ion-item>
+    <p>{{ videoInfo }}</p>
+  </ion-item>
+  <ion-button (click)="getInfo()">Get info</ion-button>
 </ion-content>

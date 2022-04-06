@@ -83,7 +83,7 @@ export class VideoService {
     const userId = this.auth.getCurrentUserId();
     const videosRef = collection(this.firestore, `users/${userId}/videos`);
     return addDoc(videosRef, { 
-      date: serverTimestamp,
+      date: serverTimestamp(),
       title,
       notes
     }).then(res => {

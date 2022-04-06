@@ -7,6 +7,7 @@ import { VideoService } from 'src/app/services/video.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
+import { serverTimestamp } from 'firebase/firestore';
 
 @Component({
   selector: 'app-add-video',
@@ -69,7 +70,7 @@ export class AddVideoPage implements OnInit {
     this.captureElement.nativeElement.muted = true;
     this.isRecording = true;
     //Recorder:
-    const options = { mimeType: 'video/webm' };
+    const options = { mimeType: 'video/mp4' };
     this.mediaRecorder = new MediaRecorder(stream, options);
     let chunks = [];
     this.mediaRecorder.ondataavailable = (event) => {
@@ -79,7 +80,7 @@ export class AddVideoPage implements OnInit {
     }
     this.mediaRecorder.start();
     this.mediaRecorder.onstop = async (event) => {
-      const videoBuffer = new Blob(chunks, { type: 'video/webm' });
+      const videoBuffer = new Blob(chunks, { type: 'video/mp4' });
       this.videoBlob = videoBuffer;
       await this.videoService.storeVideo(videoBuffer);      
       // Reload our list
@@ -116,6 +117,7 @@ export class AddVideoPage implements OnInit {
     this.takeVideoStatus = true;
     const title = this.titleAndNotes.get('title').value;
     const notes = this.titleAndNotes.get('notes').value;
+    console.log('addVideo: ', title, notes);
     this.videoService.addVideo(title, notes);
     this.uploadVideo();
   }
