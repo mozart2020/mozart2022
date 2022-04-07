@@ -1,31 +1,43 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AuthService } from 'src/app/services/auth.service';
 import { VideoService } from 'src/app/services/video.service';
-import { collection, collectionData, Firestore } from '@angular/fire/firestore';
+import { fromEvent } from 'rxjs';
 
 @Component({
   selector: 'app-video-detail',
   templateUrl: './video-detail.page.html',
   styleUrls: ['./video-detail.page.scss'],
 })
-export class VideoDetailPage implements OnInit {
+export class VideoDetailPage implements OnInit, AfterViewInit{
   @ViewChild('studentVideo') studentVideo: ElementRef;
+
   videoTitle: string;
   videoUrl: string;
-  videoInfo: string;
-  videoUrlTest = 'https://backend.mozart.gives/uploads/HpAiegX6MDdrcwxaVCXjF7NLl2o2_1649256262762.mp4';
+  duration: number;
+  timeLine: number;
+  currentTime: number = 0;
+  paused: boolean;
+
+  playButtonStatus = true;
+  
 
   constructor(
     private activatedRoute: ActivatedRoute, 
-    private videoService: VideoService,
-    private authService: AuthService,
-    private firestore: Firestore
+    private videoService: VideoService
   ) { }
 
   ngOnInit() {
     this.getVideo();
+
   }
+  ngAfterViewInit() {
+    this.onLoadedVideoData();
+    this.onPlayStudentVideo();
+    this.onPauseStudentVideo();
+    this.timeLineProgress();
+    //this.timeLineController();
+  }
+
   getVideo() {
     const id = this.activatedRoute.snapshot.params['videoId'];
     console.log('ActivatedRoute got: ', id);
@@ -35,10 +47,48 @@ export class VideoDetailPage implements OnInit {
       this.videoUrl = res.videoUrl;
     });
   }
-  getInfo() {
-    this.videoInfo = this.studentVideo.nativeElement.src;
-    console.log('Info: ', this.videoInfo);
-    console.log(this.studentVideo.nativeElement.duration);
+
+  onLoadedVideoData() {
+    fromEvent(this.studentVideo.nativeElement, 'loadeddata').subscribe(res => {
+      this.duration = this.studentVideo.nativeElement.duration;
+      console.log('duration: ', this.duration);
+      this.paused = this.studentVideo.nativeElement.paused;
+      console.log('paused: ', this.paused);
+    })
+  }
+  timeLineProgress() {
+    fromEvent(this.studentVideo.nativeElement, 'timeupdate').subscribe(res => {
+      this.currentTime = this.studentVideo.nativeElement.currentTime;
+      this.timeLine = this.studentVideo.nativeElement.currentTime/this.duration;
+    })
+  }
+
+  onPlayStudentVideo() {
+    fromEvent(this.studentVideo.nativeElement, 'play').subscribe(res => {
+      this.paused = false;
+      console.log('paused: ', this.paused);
+    })
+  }
+  onPauseStudentVideo() {
+    fromEvent(this.studentVideo.nativeElement, 'pause').subscribe(res => {
+      this.paused = true;
+      console.log('paused: ', this.paused);
+    })
+  }
+
+ //////// CONTROL VIDEO SECTION ///////////
+ 
+  playPauseStudentVideo() {
+    if (this.studentVideo.nativeElement.paused == true) {
+      this.studentVideo.nativeElement.play();
+      this.paused = false;
+      console.log('paused: ', this.paused);
+    }
+    else {     
+      this.studentVideo.nativeElement.pause();
+      this.paused = true;
+      console.log('paused: ', this.paused);
+    }
   }
 
 }

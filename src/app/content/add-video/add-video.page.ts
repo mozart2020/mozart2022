@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@an
 import { Router } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CapacitorVideoPlayer } from 'capacitor-video-player';
+import { CapacitorVideoPlayer, CapacitorVideoPlayerPlugin } from 'capacitor-video-player';
 import { VideoService } from 'src/app/services/video.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpClient } from '@angular/common/http';
@@ -19,13 +19,14 @@ export class AddVideoPage implements OnInit {
   titleAndNotes: FormGroup;
   mediaRecorder: MediaRecorder;
   isRecording = false;
-  videoPlayer: any;
+  videoPlayer: CapacitorVideoPlayerPlugin;
   playerIsInitialized = false;
   takeVideoStatus = false;
   
   videoUrls = [];
+  videoUrl = '';
   videoBlob: Blob;
-  date: any;
+  length: number;
 
   constructor(
     private router: Router,
@@ -84,14 +85,21 @@ export class AddVideoPage implements OnInit {
       this.videoBlob = videoBuffer;
       await this.videoService.storeVideo(videoBuffer);      
       // Reload our list
-      this.videoUrls = this.videoService.videos;
+      const videoUrls = this.videoService.videos;
+      this.videoUrls = videoUrls;
+      const videoUrl = videoUrls.forEach(value => {
+        console.log('inside forEach: ', value);
+        this.videoUrl = value;
+      })
       console.log('Video in modal page: ', this.videoUrls);
       this.changeDetector.detectChanges();
     }
   }
 
-  async playVideo(videoUrl) {
-    const base64dataUrl = await this.videoService.getVideoBase64Url(videoUrl);
+  async playVideo() {
+    console.log('inside playVideo: ', this.videoUrl);
+    const base64dataUrl = await this.videoService.getVideoBase64Url(this.videoUrl);
+    console.log('video player: ', base64dataUrl);
     // Show player emebdded
     await this.videoPlayer.initPlayer({
       mode: 'embedded',
@@ -99,6 +107,13 @@ export class AddVideoPage implements OnInit {
       playerId: 'player',
       componentTag: 'app-add-video'
     });
+  }
+  getDurationFromPlayer() {
+    const durationInfo = this.videoPlayer.getDuration({ playerId: 'player' });
+    durationInfo.then(res => {
+      this.length = res.value;
+    })
+    console.log(this.length);
   }
   setPlayer() {
     this.playerIsInitialized = true;
@@ -118,7 +133,7 @@ export class AddVideoPage implements OnInit {
     const title = this.titleAndNotes.get('title').value;
     const notes = this.titleAndNotes.get('notes').value;
     console.log('addVideo: ', title, notes);
-    this.videoService.addVideo(title, notes);
+    this.videoService.addVideo(title, notes, this.length);
     this.uploadVideo();
   }
   

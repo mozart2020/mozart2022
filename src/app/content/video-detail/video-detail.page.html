@@ -8,20 +8,56 @@
 </ion-header>
 
 <ion-content>
-  <video
-    #studentVideo
-    src="{{videoUrl}}"
-    width="100%"
-    playsinline
-    class="video"
-    controls>
-  </video>
-  <ion-item>
-    <h1> {{ videoTitle }}</h1>
-
-  </ion-item>
-  <ion-item>
-    <p>{{ videoInfo }}</p>
-  </ion-item>
-  <ion-button (click)="getInfo()">Get info</ion-button>
+  <div sticky="true">
+    <video
+      #studentVideo
+      src="{{videoUrl}}"
+      width="100%"
+      playsinline
+      controls
+      [(currentTime)]="currentTime"
+      class="video">
+    </video>
+  <!--   <ion-row>
+      <ion-col class="control-bar">
+        <ion-button 
+          size="small" 
+            color="dark" >          
+          <ion-icon name="play-skip-back-outline"></ion-icon>
+        </ion-button>  
+      </ion-col>
+      <ion-col class="control-bar">
+        <ion-button 
+            size="small" 
+            color="dark">          
+          <ion-icon name="play-back-circle-outline"></ion-icon>
+          -5
+        </ion-button>  
+      </ion-col>
+      <ion-col class="ion-text-center control-bar">
+        <ion-button 
+          size="small" 
+          color="dark" 
+          (click)="playPauseStudentVideo()">
+          <ion-icon [name]="paused ? 'play-outline' : 'pause-outline'"></ion-icon>
+        </ion-button> 
+      </ion-col>
+      <ion-col class="ion-text-end control-bar">
+        <ion-button 
+          size="small" 
+          color="dark" >
+          +5
+          <ion-icon name="play-forward-circle-outline"></ion-icon>           
+        </ion-button>   
+      </ion-col>       
+    </ion-row> -->
+    <div>    
+      
+      <ion-progress-bar
+        color="secondary" 
+        [value]="timeLine">
+      </ion-progress-bar>
+    </div>   
+  </div>
+  
 </ion-content>

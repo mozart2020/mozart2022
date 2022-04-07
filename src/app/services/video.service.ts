@@ -67,6 +67,7 @@ export class VideoService {
       path: path,
       directory: Directory.Data
     });
+    console.log('inside getVideoBase64Url: ', file.data);
     return `data:video/mp4;base64,${file.data}`;
   }
   async getVideoDuration(fullPath) {
@@ -79,13 +80,14 @@ export class VideoService {
   }
 
   //Firebase section:
-  addVideo(title, notes) {
+  addVideo(title, notes, length) {
     const userId = this.auth.getCurrentUserId();
     const videosRef = collection(this.firestore, `users/${userId}/videos`);
     return addDoc(videosRef, { 
       date: serverTimestamp(),
       title,
-      notes
+      notes,
+      length
     }).then(res => {
       this.justAddedVideoID = res.id;
       console.log('just created this id for added video: ', this.justAddedVideoID)
