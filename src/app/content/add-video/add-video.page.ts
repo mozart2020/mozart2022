@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormGroup, NgForm } from '@angular/forms';
 import { CapacitorVideoPlayer, CapacitorVideoPlayerPlugin } from 'capacitor-video-player';
 import { VideoService } from 'src/app/services/video.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -29,7 +29,6 @@ export class AddVideoPage implements OnInit {
   length: number = 0;
 
   constructor(
-    private fb: FormBuilder,
     private router: Router,
     private loadingCtrl: LoadingController,
     private videoService: VideoService,
@@ -43,15 +42,6 @@ export class AddVideoPage implements OnInit {
 
   ngOnInit() {
     this.videoPlayer = CapacitorVideoPlayer;
-    /* this.titleAndNotes = new FormGroup({
-      title: new FormControl('', [Validators.required, Validators.email]),
-      notes: new FormControl('', Validators.required)
-    }); */
-    this.titleAndNotes = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(2)]],
-      notes: ['', Validators.required],
-    });
-    console.log('NgOnInit, this.titleAndNotes ', this.titleAndNotes);
   }
    async presentToast(text) {
     const toast = await this.toastCtrl.create({
@@ -162,13 +152,16 @@ export class AddVideoPage implements OnInit {
   cancel() {
     this.videoUrls = [];
   }
+  addVideoDummy(form: NgForm) {
+    console.log(form);
+  }
   addVideo() {
     this.takeVideoStatus = true;
     const title = this.titleAndNotes.get('title').value;
     const notes = this.titleAndNotes.get('notes').value;
     console.log('addVideo: ', title, notes);
-    this.videoService.addVideo(title, notes, this.length);
-    this.uploadVideo();
+    //this.videoService.addVideo(title, notes, this.length);
+    //this.uploadVideo();
   }
   
   //Upload section:

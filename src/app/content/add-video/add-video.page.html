@@ -34,25 +34,31 @@
     </ion-list>
   </div>
  
-  <div *ngIf="!videoUrls.length == 0">    
-    <form [formGroup]="titleAndNotes" (ngSubmit)="addVideo()">
+  <div >    
+    <form #titleAndNotes="ngForm" (ngSubmit)="addVideoDummy(titleAndNotes)">
       <ion-item>
         <ion-label>Title:</ion-label>
         <ion-input
-          type="title"
-          formControlName="title" 
-          placeholder="Give your video a title"></ion-input>
+          type="text"
+          ngModel
+          name="title"
+          placeholder="Give your video a title"
+          required
+          minlength="2"
+          #title="ngModel"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label>Notes:</ion-label>
-        <ion-input 
-          type="notes"
-          formControlName="notes" 
-          placeholder="Comment on your video"></ion-input>
+        <ion-textarea rows="2"
+          type="text"
+          ngModel
+          name="notes"
+          placeholder="Comment on your video"
+          maxlength="600"></ion-textarea>
       </ion-item>
-     <ion-button [disabled]="!titleAndNotes.get('title').valid">test</ion-button>
-      <ion-button 
+      <ion-button
           type="submit"
+          [disabled]="!titleAndNotes.valid"
           expand="block"
           color="secondary">I take this video!</ion-button> <!-- [disabled]="!titleAndNotes.get('title').valid" -->
     </form>
