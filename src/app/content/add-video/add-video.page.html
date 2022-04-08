@@ -35,21 +35,24 @@
   </div>
  
   <div *ngIf="!videoUrls.length == 0">    
-    <form [formGroup]="titleAndNotes">
+    <form [formGroup]="titleAndNotes" (ngSubmit)="addVideo()">
       <ion-item>
         <ion-label>Title:</ion-label>
         <ion-input
+          type="title"
           formControlName="title" 
           placeholder="Give your video a title"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label>Notes:</ion-label>
         <ion-input 
+          type="notes"
           formControlName="notes" 
           placeholder="Comment on your video"></ion-input>
       </ion-item>
+     <ion-button [disabled]="!titleAndNotes.get('title').valid">test</ion-button>
       <ion-button 
-          (click)="addVideo()"
+          type="submit"
           expand="block"
           color="secondary">I take this video!</ion-button> <!-- [disabled]="!titleAndNotes.get('title').valid" -->
     </form>
@@ -72,6 +75,7 @@
         (click)="recordVideo()">Record new video</ion-button>
     </ion-col>
   </ion-row>
-  <ion-button (click)="getDurationFromPlayer()">get duration</ion-button>
+  <ion-button *ngIf="length === 0" (click)="getDurationFromPlayer()">get duration</ion-button>
+  <ion-button (click)="getDurationFromPlayer()">get duration without *ngIf</ion-button>
 </ion-content>
 

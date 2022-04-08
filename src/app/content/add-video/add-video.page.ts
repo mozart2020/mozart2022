@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CapacitorVideoPlayer, CapacitorVideoPlayerPlugin } from 'capacitor-video-player';
 import { VideoService } from 'src/app/services/video.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -26,9 +26,10 @@ export class AddVideoPage implements OnInit {
   videoUrls = [];
   videoUrl = '';
   videoBlob: Blob;
-  length: number;
+  length: number = 0;
 
   constructor(
+    private fb: FormBuilder,
     private router: Router,
     private loadingCtrl: LoadingController,
     private videoService: VideoService,
@@ -42,9 +43,13 @@ export class AddVideoPage implements OnInit {
 
   ngOnInit() {
     this.videoPlayer = CapacitorVideoPlayer;
-    this.titleAndNotes = new FormGroup({
-      title: new FormControl('', Validators.required),
+    /* this.titleAndNotes = new FormGroup({
+      title: new FormControl('', [Validators.required, Validators.email]),
       notes: new FormControl('', Validators.required)
+    }); */
+    this.titleAndNotes = this.fb.group({
+      title: ['', [Validators.required, Validators.minLength(2)]],
+      notes: ['', Validators.required],
     });
     console.log('NgOnInit, this.titleAndNotes ', this.titleAndNotes);
   }
@@ -83,8 +88,9 @@ export class AddVideoPage implements OnInit {
     this.mediaRecorder.onstop = async (event) => {
       const videoBuffer = new Blob(chunks, { type: 'video/mp4' });
       this.videoBlob = videoBuffer;
+      //Video: im internen Storage speichern:
       await this.videoService.storeVideo(videoBuffer);      
-      // Reload our list
+      // Videoarray erneuern:
       const videoUrls = this.videoService.videos;
       this.videoUrls = videoUrls;
       const videoUrl = videoUrls.forEach(value => {
@@ -93,10 +99,31 @@ export class AddVideoPage implements OnInit {
       })
       console.log('Video in modal page: ', this.videoUrls);
       this.changeDetector.detectChanges();
+      console.log('Nun sollte der Player geladen werden, wenn videoUrl vorhanden: ', this.videoUrl);
+      ///init Video Player:
+      const base64dataUrl = await this.videoService.getVideoBase64Url(this.videoUrl);
+      console.log('video player: ', base64dataUrl);
+      // Show player emebdded
+    await this.videoPlayer.initPlayer({
+        mode: 'embedded',
+        url: base64dataUrl,
+        playerId: 'player',
+        componentTag: 'app-add-video'
+       }).then(res => console.log(res));
+     //get video length from player for DB:
+     console.log('is player initialized? ');
+     this.videoPlayer.getDuration({ playerId: 'player' })
+     .then(res => {
+       this.length = res.value;
+       console.log('inside getDuration, length; ', this.length);
+     }).then(res => {
+       console.log('inside getDuration second then-block, length; ', res);
+     })
+    console.log('is video length availabel? ', this.length);
     }
   }
 
-  async playVideo() {
+  /* async playVideo() {
     console.log('inside playVideo: ', this.videoUrl);
     const base64dataUrl = await this.videoService.getVideoBase64Url(this.videoUrl);
     console.log('video player: ', base64dataUrl);
@@ -107,11 +134,18 @@ export class AddVideoPage implements OnInit {
       playerId: 'player',
       componentTag: 'app-add-video'
     });
-  }
+    //get video length from player for DB:
+    console.log('is player initialized? ', )
+    this.videoPlayer.getDuration({ playerId: 'player' })
+    .then(res => {
+      this.length = res.value;
+    });    
+  } */
   getDurationFromPlayer() {
     const durationInfo = this.videoPlayer.getDuration({ playerId: 'player' });
     durationInfo.then(res => {
       this.length = res.value;
+      console.log('inside getDuration(), length; ', this.length);
     })
     console.log(this.length);
   }
