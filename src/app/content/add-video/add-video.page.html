@@ -25,17 +25,8 @@
   <!-- Neccessary for the video player -->
   <div id="player"></div>
  
-  <div *ngIf="!playerIsInitialized" (click)="setPlayer()">
-    <ion-list *ngFor="let videoUrl of videoUrls">
-      <ion-button (click)="playVideo(videoUrl)" expand="block">
-        Watch recorded video
-        <ion-button slot="end"><ion-icon name="play-outline"></ion-icon></ion-button>
-      </ion-button>
-    </ion-list>
-  </div>
- 
-  <div >    
-    <form #titleAndNotes="ngForm" (ngSubmit)="addVideoDummy(titleAndNotes)">
+  <div *ngIf="playerIsInitialized">
+    <form #titleAndNotes="ngForm" (ngSubmit)="openAlert(titleAndNotes)">
       <ion-item>
         <ion-label>Title:</ion-label>
         <ion-input
@@ -60,9 +51,8 @@
           type="submit"
           [disabled]="!titleAndNotes.valid"
           expand="block"
-          color="secondary">I take this video!</ion-button> <!-- [disabled]="!titleAndNotes.get('title').valid" -->
-    </form>
-    
+          color="secondary">I take this video!</ion-button>
+    </form>    
   </div>
   <hr>
   <ion-row *ngIf="!isRecording">
@@ -81,7 +71,7 @@
         (click)="recordVideo()">Record new video</ion-button>
     </ion-col>
   </ion-row>
-  <ion-button *ngIf="length === 0" (click)="getDurationFromPlayer()">get duration</ion-button>
-  <ion-button (click)="getDurationFromPlayer()">get duration without *ngIf</ion-button>
+  <ion-button (click)="getDurationFromPlayer()">get duration via getDurationFromPlayer</ion-button>
+  <ion-button (click)="getDuration()">get duration via this.length</ion-button>
 </ion-content>
 

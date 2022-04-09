@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { LoadingController, AlertController, ToastController } from '@ionic/angular';
 import { FormGroup, NgForm } from '@angular/forms';
 import { CapacitorVideoPlayer, CapacitorVideoPlayerPlugin } from 'capacitor-video-player';
 import { VideoService } from 'src/app/services/video.service';
@@ -31,6 +31,7 @@ export class AddVideoPage implements OnInit {
   constructor(
     private router: Router,
     private loadingCtrl: LoadingController,
+    private alertCtrl: AlertController,
     private videoService: VideoService,
     private authService: AuthService,
     private changeDetector: ChangeDetectorRef,
@@ -99,16 +100,7 @@ export class AddVideoPage implements OnInit {
         url: base64dataUrl,
         playerId: 'player',
         componentTag: 'app-add-video'
-       }).then(res => console.log(res));
-     //get video length from player for DB:
-     console.log('is player initialized? ');
-     this.videoPlayer.getDuration({ playerId: 'player' })
-     .then(res => {
-       this.length = res.value;
-       console.log('inside getDuration, length; ', this.length);
-     }).then(res => {
-       console.log('inside getDuration second then-block, length; ', res);
-     })
+       });
     console.log('is video length availabel? ', this.length);
     }
   }
@@ -132,36 +124,64 @@ export class AddVideoPage implements OnInit {
     });    
   } */
   getDurationFromPlayer() {
-    const durationInfo = this.videoPlayer.getDuration({ playerId: 'player' });
-    durationInfo.then(res => {
+    this.videoPlayer.getDuration({ playerId: 'player' }).
+    then(res => {
       this.length = res.value;
-      console.log('inside getDuration(), length; ', this.length);
-    })
-    console.log(this.length);
-  }
-  setPlayer() {
-    this.playerIsInitialized = true;
+      console.log('getFromPlayer', res.value, this.length);
+      return res.value;
+    });
   }
   stopRecord() {
-    console.log('player is initialized: ', this.playerIsInitialized);
+    console.log('player is initialized, start: ', this.playerIsInitialized);
     this.mediaRecorder.stop();
     this.mediaRecorder = null;
     this.captureElement.nativeElement.srcObject = null;
     this.isRecording = false;
+    this.playerIsInitialized = true;
+    console.log('player is initialized, end: ', this.playerIsInitialized);
   }
   cancel() {
     this.videoUrls = [];
   }
-  addVideoDummy(form: NgForm) {
-    console.log(form);
-  }
-  addVideo() {
+
+  async openAlert(form: NgForm) {
     this.takeVideoStatus = true;
-    const title = this.titleAndNotes.get('title').value;
-    const notes = this.titleAndNotes.get('notes').value;
-    console.log('addVideo: ', title, notes);
+    const length = await this.videoPlayer.getDuration({ playerId: 'player' }).then(res => {
+      return res.value;
+    }).catch(err => {
+      console.log('catch', err.value);
+    });
+    this.length = length
+    console.log('current value length after getDuration()', this.length);
+    const alert = await this.alertCtrl.create({
+      header: 'Choose teachers',
+      //TO DO: change string (string interpolation) depending on if(friend, group or public teacher)
+      message: 'Would you like to ask a friend, a group or a public teacher for feedback?',
+      backdropDismiss: false,
+      buttons: [{
+        text: 'later',
+        role: 'Cancle',
+        cssClass: 'alert-class',
+        handler: (value: any) => {}
+      },
+    {
+      text: 'yes',
+      role: 'Cancle',
+      cssClass: 'alert-class',
+      handler: (value: any) => {
+        this.openChooseTeacher()
+      }
+    }]
+    });
+    await alert.present();
     //this.videoService.addVideo(title, notes, this.length);
     //this.uploadVideo();
+  }
+  openChooseTeacher() {
+    console.log('inside openChooseTeacher, current value length', this.length);
+  }
+  getDuration() {
+    console.log(this.length);
   }
   
   //Upload section:
