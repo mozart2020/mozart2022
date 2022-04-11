@@ -55,12 +55,11 @@
     </form>    
   </div>
   <hr>
-  <ion-row *ngIf="!isRecording">
+  <ion-row *ngIf="!playerIsInitialized || !isRecording">
     <ion-col size="6">
       <ion-button
         size="small"
         expand="block"      
-        (click)="cancel()"
         routerLink="../content">Cancel</ion-button>    
     </ion-col>
     <ion-col size="6">
@@ -71,7 +70,5 @@
         (click)="recordVideo()">Record new video</ion-button>
     </ion-col>
   </ion-row>
-  <ion-button (click)="getDurationFromPlayer()">get duration via getDurationFromPlayer</ion-button>
-  <ion-button (click)="getDuration()">get duration via this.length</ion-button>
 </ion-content>
 

@@ -1,13 +1,13 @@
 import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoadingController, AlertController, ToastController } from '@ionic/angular';
+import { LoadingController, AlertController, ModalController, ToastController } from '@ionic/angular';
 import { FormGroup, NgForm } from '@angular/forms';
 import { CapacitorVideoPlayer, CapacitorVideoPlayerPlugin } from 'capacitor-video-player';
 import { VideoService } from 'src/app/services/video.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
-import { serverTimestamp } from 'firebase/firestore';
+import { ChooseTeacherModalPage } from '../choose-teacher-modal/choose-teacher-modal.page';
 
 @Component({
   selector: 'app-add-video',
@@ -23,7 +23,6 @@ export class AddVideoPage implements OnInit {
   playerIsInitialized = false;
   takeVideoStatus = false;
   
-  videoUrls = [];
   videoUrl = '';
   videoBlob: Blob;
   length: number = 0;
@@ -32,6 +31,7 @@ export class AddVideoPage implements OnInit {
     private router: Router,
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
+    private modalCtrl: ModalController,
     private videoService: VideoService,
     private authService: AuthService,
     private changeDetector: ChangeDetectorRef,
@@ -54,9 +54,6 @@ export class AddVideoPage implements OnInit {
 
   async recordVideo() {
     console.log('player is initialized: ', this.playerIsInitialized);
-    if (this.videoUrls.length != 0) {
-      this.videoUrls = [];
-    }
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: 'user'
@@ -80,18 +77,13 @@ export class AddVideoPage implements OnInit {
       const videoBuffer = new Blob(chunks, { type: 'video/mp4' });
       this.videoBlob = videoBuffer;
       //Video: im internen Storage speichern:
+    
       await this.videoService.storeVideo(videoBuffer);      
-      // Videoarray erneuern:
-      const videoUrls = this.videoService.videos;
-      this.videoUrls = videoUrls;
-      const videoUrl = videoUrls.forEach(value => {
-        console.log('inside forEach: ', value);
-        this.videoUrl = value;
-      })
-      console.log('Video in modal page: ', this.videoUrls);
+      //get local videoUrl:
+      this.videoUrl = this.videoService.localStorageVideoUrl;
       this.changeDetector.detectChanges();
       console.log('Nun sollte der Player geladen werden, wenn videoUrl vorhanden: ', this.videoUrl);
-      ///init Video Player:
+      ///init Video Player, Capacitor video pleyer requires base64:
       const base64dataUrl = await this.videoService.getVideoBase64Url(this.videoUrl);
       console.log('video player: ', base64dataUrl);
       // Show player emebdded
@@ -101,36 +93,13 @@ export class AddVideoPage implements OnInit {
         playerId: 'player',
         componentTag: 'app-add-video'
        });
-    console.log('is video length availabel? ', this.length);
+    await this.videoPlayer.getDuration({ playerId: 'player' }).then(res => {
+      this.length = res.value;
+    });
+    console.log('is video length availabel? Not yet.', this.length);
     }
   }
 
-  /* async playVideo() {
-    console.log('inside playVideo: ', this.videoUrl);
-    const base64dataUrl = await this.videoService.getVideoBase64Url(this.videoUrl);
-    console.log('video player: ', base64dataUrl);
-    // Show player emebdded
-    await this.videoPlayer.initPlayer({
-      mode: 'embedded',
-      url: base64dataUrl,
-      playerId: 'player',
-      componentTag: 'app-add-video'
-    });
-    //get video length from player for DB:
-    console.log('is player initialized? ', )
-    this.videoPlayer.getDuration({ playerId: 'player' })
-    .then(res => {
-      this.length = res.value;
-    });    
-  } */
-  getDurationFromPlayer() {
-    this.videoPlayer.getDuration({ playerId: 'player' }).
-    then(res => {
-      this.length = res.value;
-      console.log('getFromPlayer', res.value, this.length);
-      return res.value;
-    });
-  }
   stopRecord() {
     console.log('player is initialized, start: ', this.playerIsInitialized);
     this.mediaRecorder.stop();
@@ -138,51 +107,62 @@ export class AddVideoPage implements OnInit {
     this.captureElement.nativeElement.srcObject = null;
     this.isRecording = false;
     this.playerIsInitialized = true;
+    this.changeDetector.detectChanges();
     console.log('player is initialized, end: ', this.playerIsInitialized);
   }
-  cancel() {
-    this.videoUrls = [];
-  }
 
+
+  //will be called by clicking button "I take this video":
   async openAlert(form: NgForm) {
     this.takeVideoStatus = true;
-    const length = await this.videoPlayer.getDuration({ playerId: 'player' }).then(res => {
-      return res.value;
-    }).catch(err => {
-      console.log('catch', err.value);
+    const loading = await this.loadingCtrl.create({
+      message: 'Please wait...',
     });
-    this.length = length
-    console.log('current value length after getDuration()', this.length);
+    await loading.present();
+    //retrieve video length from capacitor player to use it for updating firestore DB:
+    await this.videoPlayer.getDuration({ playerId: 'player' }).then(res => {
+      this.length = res.value;
+      console.log('inside openAlert()', this.length);
+      loading.dismiss();
+    });
+    //let user decide wether to choose a teacher now or later
     const alert = await this.alertCtrl.create({
       header: 'Choose teachers',
       //TO DO: change string (string interpolation) depending on if(friend, group or public teacher)
       message: 'Would you like to ask a friend, a group or a public teacher for feedback?',
       backdropDismiss: false,
-      buttons: [{
+      buttons: [{ //if user decides to choose a teacher later, go to content page:
         text: 'later',
         role: 'Cancle',
         cssClass: 'alert-class',
-        handler: (value: any) => {}
+        handler: (value: any) => {
+          console.log(form.value);
+          this.videoPlayer.stopAllPlayers();
+          this.chooseTeacherLater(form.value);
+        }
       },
-    {
+    { //if user wants to choose a teacher: open choose-teacher-modal page:
       text: 'yes',
       role: 'Cancle',
       cssClass: 'alert-class',
       handler: (value: any) => {
-        this.openChooseTeacher()
+        this.videoPlayer.stopAllPlayers();
+        this.openChooseTeacher();
       }
     }]
     });
     await alert.present();
-    //this.videoService.addVideo(title, notes, this.length);
-    //this.uploadVideo();
+ 
+  }
+  
+  chooseTeacherLater(formValue: any) {
+    console.log(formValue.title, formValue.notes);
+    //this.router.navigateByUrl('home/content', {replaceUrl: true});
   }
   openChooseTeacher() {
     console.log('inside openChooseTeacher, current value length', this.length);
   }
-  getDuration() {
-    console.log(this.length);
-  }
+
   
   //Upload section:
   async uploadVideo() {

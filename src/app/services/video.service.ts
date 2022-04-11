@@ -29,7 +29,7 @@ export interface VideoInfo {
   providedIn: 'root'
 })
 export class VideoService {
-  public videos = [];
+  public localStorageVideoUrl = '';
   justAddedVideoID: string;
 
   constructor(
@@ -48,9 +48,8 @@ export class VideoService {
       directory: Directory.Data,
     });
     // Replace file in array
-    this.videos = [];
-    this.videos.unshift(savedFile.uri);
-    console.log('MY Video Array: ', this.videos);    
+    this.localStorageVideoUrl = savedFile.uri;
+    console.log('Inside video.sevice, localStorageUrl', this.localStorageVideoUrl);    
   }
   // Helper functions
   private convertBlobToBase64 = (blob: Blob) => new Promise((resolve, reject) => {
@@ -62,12 +61,17 @@ export class VideoService {
     reader.readAsDataURL(blob);    
   });
   async getVideoBase64Url(fullPath) {
+    const loading = await this.loadingCtrl.create({
+      message: 'Please wait...',
+    });
+    await loading.present();
     const path = fullPath.substr(fullPath.lastIndexOf('/') + 1);
     const file = await Filesystem.readFile({
       path: path,
       directory: Directory.Data
     });
     console.log('inside getVideoBase64Url: ', file.data);
+    loading.dismiss();
     return `data:video/mp4;base64,${file.data}`;
   }
   async getVideoDuration(fullPath) {

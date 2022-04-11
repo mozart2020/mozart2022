@@ -19,6 +19,10 @@ const routes: Routes = [
   {
     path: 'add-video',
     loadChildren: () => import('./add-video/add-video.module').then( m => m.AddVideoPageModule)
+  },
+  {
+    path: 'choose-teacher-modal',
+    loadChildren: () => import('./choose-teacher-modal/choose-teacher-modal.module').then( m => m.ChooseTeacherModalPageModule)
   }
 ];
 
