@@ -93,14 +93,10 @@ export class VideoService {
       notes,
       length,
       videoLocalUrl
-    }).then(res => {
-      this.justAddedVideoID = res.id;
-      console.log('just created this id for added video: ', this.justAddedVideoID)
-    })
+    });
   }
-  async updateVideoUrl(videoUrl: string) {
+  async updateVideoUrl(videoId: string, videoUrl: string) {
     const userId = this.auth.getCurrentUserId();
-    const videoId = this.justAddedVideoID;
     const videoDocRef = doc(this.firestore, `users/${userId}/videos/${videoId}`);
     return updateDoc(videoDocRef, { 
       videoUrl

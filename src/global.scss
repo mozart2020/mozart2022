@@ -1,9 +1,10 @@
-.transperant-modal {
+// ToDo: check all parameters:
+.transparent-modal {
     --background: #0000005c;
     &::part(content) {
         backdrop-filter: blur(12px);
-        width: 80%;
-        height: 80%;
+        width: 90%;
+        height: 100%;
         margin: auto;
     }
     ion-content {

@@ -135,7 +135,8 @@ getNonFriends() {
       component: AddConnectionModalPage,
       componentProps: { connectionIds: this.connectionIds},
       swipeToClose: true,
-      presentingElement: this.routerOutlet.nativeEl
+      presentingElement: this.routerOutlet.nativeEl,
+      cssClass: 'transparent-modal'
     });
     modal.present();
     const { data } =await modal.onDidDismiss();

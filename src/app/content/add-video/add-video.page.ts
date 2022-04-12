@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoadingController, AlertController, ModalController, ToastController } from '@ionic/angular';
+import { LoadingController, AlertController, ModalController, IonRouterOutlet, ToastController } from '@ionic/angular';
 import { FormGroup, NgForm } from '@angular/forms';
 import { CapacitorVideoPlayer, CapacitorVideoPlayerPlugin } from 'capacitor-video-player';
 import { VideoService } from 'src/app/services/video.service';
@@ -26,12 +26,14 @@ export class AddVideoPage implements OnInit {
   videoLocalUrl = '';
   videoBlob: Blob;
   length: number = 0;
+  videoId: string;
 
   constructor(
     private router: Router,
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
     private modalCtrl: ModalController,
+    private routerOutlet: IonRouterOutlet,
     private videoService: VideoService,
     private authService: AuthService,
     private changeDetector: ChangeDetectorRef,
@@ -147,7 +149,7 @@ export class AddVideoPage implements OnInit {
       cssClass: 'alert-class',
       handler: (value: any) => {
         this.videoPlayer.stopAllPlayers();
-        this.openChooseTeacher();
+        this.openChooseTeacher(form.value);
       }
     }]
     });
@@ -159,11 +161,22 @@ export class AddVideoPage implements OnInit {
     await this.videoService.addVideo(formValue.title, formValue.notes, this.length, this.videoLocalUrl);
     this.router.navigateByUrl('home/content', {replaceUrl: true});
   }
-  async openChooseTeacher() {
+  async openChooseTeacher(formValue: any) {
     console.log('inside openChooseTeacher, current value length', this.length);
     const modal = await this.modalCtrl.create ({
-      component: ChooseTeacherModalPage
-    })
+      component: ChooseTeacherModalPage,
+      componentProps: {
+        title: formValue.title,
+        notes: formValue.notes,
+        length: this.length,
+        videoLocalUrl: this.videoLocalUrl
+      },
+      swipeToClose: true,
+      presentingElement: this.routerOutlet.nativeEl,
+      cssClass: 'transparent-modal' //ToDo: Check this class (global.scss)
+    });
+    modal.present();
+
   }
 
   
@@ -189,7 +202,7 @@ export class AddVideoPage implements OnInit {
       .subscribe(res => {
           if (res['success']) {
               this.presentToast('Video upload complete.');
-              this.videoService.updateVideoUrl(`https://backend.mozart.gives/uploads/${fileName}`);
+              this.videoService.updateVideoUrl(this.videoId, `https://backend.mozart.gives/uploads/${fileName}`);
               console.log('video url created bei updateVideoUrl(): ', `https://backend.mozart.gives/uploads/${fileName}`)
           } else {
               this.presentToast('Video upload failed.');
