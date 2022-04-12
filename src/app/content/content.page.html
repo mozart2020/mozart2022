@@ -18,27 +18,30 @@
     </ion-thumbnail>
   </ion-toolbar>
 
-  <ion-toolbar color="light" *ngIf="studentVideos.length">
-    <div class="button-bar">
-    <ion-button
-      size="small"
-      shape="round"
-      [class]="allSelected"
-      (click)="selectAll()">All
-    </ion-button>
-    <ion-button
-      size="small"
-      shape="round"
-      [class]="myVideosSelected"
-      (click)="selectMyVideos()">My videos
-    </ion-button>
-    <ion-button
-      size="small"
-      shape="round"
-      [class]="studentVideosSelected"
-      (click)="selectStudentVideos()">Friends videos
-  </ion-button>
-  </div>
+  <ion-toolbar color="light" *ngIf="studentVideos.length" value="all">
+    <ion-segment>
+      <ion-segment-button
+        value="all"
+        size="small"
+        shape="round"
+        [class]="allSelected"
+        (click)="selectAll()">All
+      </ion-segment-button>
+      <ion-segment-button
+        value="myVideos"
+        size="small"
+        shape="round"
+        [class]="myVideosSelected"
+        (click)="selectMyVideos()">My videos
+      </ion-segment-button>
+      <ion-segment-button
+        value="friendsVideos"
+        size="small"
+        shape="round"
+        [class]="studentVideosSelected"
+        (click)="selectStudentVideos()">Friends videos
+      </ion-segment-button>
+  </ion-segment>
 </ion-toolbar>
 </ion-header>
 

@@ -84,7 +84,7 @@ export class VideoService {
   }
 
   //Firebase section:
-  async addVideo(title: string, notes: string, length: number, videoLocalUrl: string) {
+  async addVideo(title: string, notes: string, length: number, videoLocalUrl: string, videoUrl: string) {
     const userId = this.auth.getCurrentUserId();
     const videosRef = collection(this.firestore, `users/${userId}/videos`);
     return addDoc(videosRef, { 
@@ -92,7 +92,8 @@ export class VideoService {
       title,
       notes,
       length,
-      videoLocalUrl
+      videoLocalUrl,
+      videoUrl
     });
   }
   async updateVideoUrl(videoId: string, videoUrl: string) {

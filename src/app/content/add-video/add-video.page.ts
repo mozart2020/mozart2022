@@ -158,7 +158,12 @@ export class AddVideoPage implements OnInit {
   
   async chooseTeacherLater(formValue: any) { //formValue from openAlert()
     console.log(formValue.title, formValue.notes, this.length, this.videoLocalUrl);
-    await this.videoService.addVideo(formValue.title, formValue.notes, this.length, this.videoLocalUrl);
+    await this.videoService.addVideo(
+      formValue.title,      //title
+      formValue.notes,      //notes
+      this.length,          //length
+      this.videoLocalUrl,   //videoLocalUrl => local device storage
+      '');                  //videoUrl => backend storage (https), updated after video upload
     this.router.navigateByUrl('home/content', {replaceUrl: true});
   }
   async openChooseTeacher(formValue: any) {

@@ -14,7 +14,7 @@ export class ChooseTeacherModalPage implements OnInit {
   @Input() length: number;
   @Input() videoLocalUrl: string;
 
-  connectionIds = [];
+  friendIds = [];
   friends = [];
   groups = [];
   publicTeachers = [];
@@ -38,16 +38,16 @@ export class ChooseTeacherModalPage implements OnInit {
   getFriends() {
     const currentUserId = this.authService.getCurrentUserId();
     this.userService.getCurrentUserConnections().subscribe(res => { //lädt alle connections des current users
-      const test = res.forEach(value => { //geht durch alle geladenen connections durch
+      res.forEach(value => { //geht durch alle geladenen connections durch
         if (value.groupName == '') {      //filtert alle groups weg, friendships bleiben übrig
           const users = value.users;      //holt sich die user ids als Array
           users.forEach(id => {
-            this.connectionIds.push(id);
-            console.log('current value of connectionIds: ', this.connectionIds);
+            this.friendIds.push(id);
+            console.log('current value of friendIds: ', this.friendIds);
           });
         }
-      });
-      this.userService.getUsersByConnectionIds(this.connectionIds).subscribe(res => {
+      });               ///CHEK AND TO DO - IS'NT IT GET USERS BY FRIENDS IDS????:
+      this.userService.getUsersByConnectionIds(this.friendIds).subscribe(res => {
         this.friends = res;
         console.log('friends: ', res); //CHECKEN WIE MAN DAS ASYNCHRON HINKRIEGT
       });
@@ -58,9 +58,13 @@ export class ChooseTeacherModalPage implements OnInit {
     this.modalCtrl.dismiss();
   }
   selectUser() {
-   this.modalCtrl.dismiss({
-      user: { id: this.selectedUserId }
+    this.userService.selectConnectionIdByFriendId(this.friendIds, this.selectedUserId).subscribe(res => {
+      console.log('SHOULD BE CONNECTION ID OF SELECTED USER', res);
     });
+
+   /* this.modalCtrl.dismiss({
+      user: { id: this.selectedUserId }
+    }); */
   }
   selectUserName(userName, userEmail) {
     console.log('user name : ', userName, 'user email: ', userEmail);

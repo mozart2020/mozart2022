@@ -1,6 +1,22 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>choose-teacher-modal</ion-title>
+    <ion-title>Ask for feedback</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">Cancel</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment value="friends">
+      <ion-segment-button value="friends">
+        <ion-label>Friends</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="groups">
+        <ion-label>Groups</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="public">
+        <ion-label>Public</ion-label>
+      </ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
@@ -28,8 +44,8 @@
       (click)="selectUser()"
       fill="solid" 
       expand="block" 
-      color="secondary">Send a friend request to <br>{{ selectedUserDisplayedString }}
-      <ion-icon name="person" slot="end"></ion-icon>
+      color="secondary">Ask {{ selectedUserDisplayedString }}<br>for Feedback
+      <ion-icon name="push" slot="end"></ion-icon>
     </ion-button>
   </div>
 </ion-footer>

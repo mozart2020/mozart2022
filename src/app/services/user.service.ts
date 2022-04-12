@@ -71,7 +71,7 @@ export class UserService {
         //filtert die user aller connections des current users heraus zieht den current user davon ab:
         return users.filter(user => !ids.includes(user.id) && user.id != currentUserId);
       })
-    )
+    );
   } 
   getPublicTeachers() {
     const usersRef = collection(this.firestore, 'users');
@@ -99,6 +99,22 @@ export class UserService {
     const q = query(connectionsRef, where ('users', 'array-contains', currentUserId));
     return collectionData(q, {idField: 'connectionId'});
   }
+  selectConnectionIdByFriendId(connectionIds: any, friendId: string) {
+    const connectionsRef = collection(this.firestore, 'connections');
+    return collectionData(connectionsRef, { idField: 'id' }).pipe(
+      map(connections => {
+        console.log('current infos', connectionIds, connections, friendId);
+        //filtert connections mit den connectionIds heraus und exkludiert alle groups:
+        return connections.filter(connection => connectionIds.includes(connection.id));// && connection.groupName == ''
+      }),
+      map(connections => {
+        console.log('inside user service, selectConnectionIdByFriendId(connectionIds: any, friendId: string): alle friends-connections', connections);
+        //filtert aus allen friends-connections diejenige der friendId heraus:
+        return connections.filter(connection => connection.users === friendId);
+        //if connection is friend not group: connection.users is a string not an array
+      })
+    );
+  }
   requestConnection(requestedUserId) { //id = userId des angefragen Users
     const userDocRef = doc(this.firestore, `users/${requestedUserId}`); //Referenz zum document des angefragten Users
     const currentUserId = this.authService.getCurrentUserId(); //id des anfragenden Users (currentUserID)
@@ -118,13 +134,13 @@ export class UserService {
     return updateDoc(userDocRef, { connectionRequests: currentUserId }); //zu Array.push umwandeln
   }
   //Annehmen einer Freundschaftsanfrage:
-  addFriend(requestingUserId) {
+  async addFriend(requestingUserId) {
     const currentUserId = this.authService.getCurrentUserId(); //id des requested users (currentUserId)
     const connectionsRef = collection(this.firestore, 'connections'); //Referenz zur Collection 'Connections'
     const users = [requestingUserId, currentUserId]; // Ids der requesting und requested User als Array-Variable 'users'
     const promises = [];
     return addDoc(connectionsRef,{ 
-        date: serverTimestamp(), 
+        createdAt: serverTimestamp(), 
         groupName: '', 
         users }).then(res =>{ //erstellt eine neue Connection
       console.log('created connection: ', res);                 // mit date, groupName und user
