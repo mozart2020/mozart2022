@@ -23,7 +23,7 @@ export class AddVideoPage implements OnInit {
   playerIsInitialized = false;
   takeVideoStatus = false;
   
-  videoUrl = '';
+  videoLocalUrl = '';
   videoBlob: Blob;
   length: number = 0;
 
@@ -80,11 +80,11 @@ export class AddVideoPage implements OnInit {
     
       await this.videoService.storeVideo(videoBuffer);      
       //get local videoUrl:
-      this.videoUrl = this.videoService.localStorageVideoUrl;
+      this.videoLocalUrl = this.videoService.localStorageVideoUrl;
       this.changeDetector.detectChanges();
-      console.log('Nun sollte der Player geladen werden, wenn videoUrl vorhanden: ', this.videoUrl);
+      console.log('Nun sollte der Player geladen werden, wenn videoUrl vorhanden: ', this.videoLocalUrl);
       ///init Video Player, Capacitor video pleyer requires base64:
-      const base64dataUrl = await this.videoService.getVideoBase64Url(this.videoUrl);
+      const base64dataUrl = await this.videoService.getVideoBase64Url(this.videoLocalUrl);
       console.log('video player: ', base64dataUrl);
       // Show player emebdded
     await this.videoPlayer.initPlayer({
@@ -151,16 +151,19 @@ export class AddVideoPage implements OnInit {
       }
     }]
     });
-    await alert.present();
- 
+    await alert.present(); 
   }
   
-  chooseTeacherLater(formValue: any) {
-    console.log(formValue.title, formValue.notes);
-    //this.router.navigateByUrl('home/content', {replaceUrl: true});
+  async chooseTeacherLater(formValue: any) { //formValue from openAlert()
+    console.log(formValue.title, formValue.notes, this.length, this.videoLocalUrl);
+    await this.videoService.addVideo(formValue.title, formValue.notes, this.length, this.videoLocalUrl);
+    this.router.navigateByUrl('home/content', {replaceUrl: true});
   }
-  openChooseTeacher() {
+  async openChooseTeacher() {
     console.log('inside openChooseTeacher, current value length', this.length);
+    const modal = await this.modalCtrl.create ({
+      component: ChooseTeacherModalPage
+    })
   }
 
   

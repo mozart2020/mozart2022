@@ -84,20 +84,21 @@ export class VideoService {
   }
 
   //Firebase section:
-  addVideo(title, notes, length) {
+  async addVideo(title: string, notes: string, length: number, videoLocalUrl: string) {
     const userId = this.auth.getCurrentUserId();
     const videosRef = collection(this.firestore, `users/${userId}/videos`);
     return addDoc(videosRef, { 
       date: serverTimestamp(),
       title,
       notes,
-      length
+      length,
+      videoLocalUrl
     }).then(res => {
       this.justAddedVideoID = res.id;
       console.log('just created this id for added video: ', this.justAddedVideoID)
     })
   }
-  updateVideoUrl(videoUrl) {
+  async updateVideoUrl(videoUrl: string) {
     const userId = this.auth.getCurrentUserId();
     const videoId = this.justAddedVideoID;
     const videoDocRef = doc(this.firestore, `users/${userId}/videos/${videoId}`);
