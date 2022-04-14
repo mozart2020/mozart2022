@@ -16,12 +16,9 @@ import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 export class CommunityPage implements OnInit {
   currentUserEmail: string;
   currentUserImage: string;
-  friendsIds = [];
+  friendIds = [];
   friends = [];
-  groups = [];
-
-  connections = [];
-  connectionIds = [];
+  groups = [];  
 
   allSelected = true;
   friendsSelected = false;
@@ -88,12 +85,12 @@ getFriends() {
       if (value.groupName == '') {      //filtert alle groups weg, friendships bleiben übrig
         const users = value.users;      //holt sich die user ids als Array
         users.forEach(id => {
-          this.connectionIds.push(id);
-          console.log('current value of connectionIds: ', this.connectionIds);
+          this.friendIds.push(id);
+          console.log('current value of connectionIds: ', this.friendIds);
         });
       }
     });
-    this.userService.getUsersByConnectionIds(this.connectionIds).subscribe(res => {
+    this.userService.getUsersByUserIds(this.friendIds).subscribe(res => {
       this.friends = res;
       console.log('friends: ', res); //CHECKEN WIE MAN DAS ASYNCHRON HINKRIEGT
     });
@@ -130,10 +127,10 @@ getNonFriends() {
   }
   //Vorhandene User zum Senden einer Freundschaftsanfrage per Modal anzeigen
   async openAddConnection() {
-    console.log('Data for componentProps: ', this.connectionIds);
+    console.log('Data for componentProps: ', this.friendIds);
     const modal = await this.modalCtrl.create({
       component: AddConnectionModalPage,
-      componentProps: { connectionIds: this.connectionIds},
+      componentProps: { friendIds: this.friendIds},
       swipeToClose: true,
       presentingElement: this.routerOutlet.nativeEl,
       cssClass: 'transparent-modal'

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { 
-  arrayUnion, 
   collection, 
   collectionData, 
   doc,
@@ -12,16 +11,21 @@ import {
   query, 
   where,
   orderBy,
-  documentId,
   serverTimestamp
 } from '@angular/fire/firestore';
 import { Subject } from 'rxjs';
-import { map, switchMap, takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+
+export interface FriendConnections {
+  firendId: string;
+  connectionId: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class UserService {
   logout$: Subject<boolean> = new Subject<boolean>();
 
@@ -37,7 +41,7 @@ export class UserService {
     })
   }
 
-////// GET USER SECTION ///////////
+////// USER SECTION ///////////
   getAllUsers() {
     const currentUserId = this.authService.getCurrentUserId();
     const usersRef = collection(this.firestore, 'users');
@@ -53,9 +57,10 @@ export class UserService {
     const userRef = doc(this.firestore, `users/${id}`);
     return docData(userRef);
   }
-  getUsersByConnectionIds(ids: any) { //gibt einen array of users aus
+  getUsersByUserIds(ids: any) { //gibt einen array of users aus
     const currentUserId = this.authService.getCurrentUserId();
     const usersRef = collection(this.firestore, 'users');
+    console.log('FRIENDS IDS?', ids);
     return collectionData(usersRef, { idField: 'id' }).pipe(
       map(users => {
         //filtert die user aller connections des current users heraus zieht den current user davon ab:
@@ -63,7 +68,7 @@ export class UserService {
       })
     )
   }
-  getUsersExcludedByConnectionIds(ids: any) { //gibt einen array of users aus
+  getUsersExcludedByUserIds(ids: any) { //gibt einen array of users aus
     const currentUserId = this.authService.getCurrentUserId();
     const usersRef = collection(this.firestore, 'users');
     return collectionData(usersRef, { idField: 'id' }).pipe(
@@ -86,7 +91,7 @@ export class UserService {
   }
 
 //////// EDIT USER SECTION ////////////////
-  updateUser(id, name, aboutMe, country) {
+  updateUser(id, name, aboutMe, country) { //called in update-profile-modal page
     const userRef = doc(this.firestore, `users/${id}`);
     updateDoc(userRef, {name: name, aboutMe: aboutMe, country: country});
   }
@@ -97,21 +102,16 @@ export class UserService {
     const currentUserId = this.authService.getCurrentUserId();
     const connectionsRef = collection(this.firestore, 'connections');
     const q = query(connectionsRef, where ('users', 'array-contains', currentUserId));
-    return collectionData(q, {idField: 'connectionId'});
+    return collectionData(q, {idField: 'id'});
   }
-  selectConnectionIdByFriendId(connectionIds: any, friendId: string) {
+  getConnectionByFriendId(friendId: string) {
+    const currentUserId = this.authService.getCurrentUserId();
     const connectionsRef = collection(this.firestore, 'connections');
-    return collectionData(connectionsRef, { idField: 'id' }).pipe(
+    const q = query(connectionsRef, where ('users', 'array-contains', friendId));
+    return collectionData(q, { idField: 'id' }).pipe(
       map(connections => {
-        console.log('current infos', connectionIds, connections, friendId);
-        //filtert connections mit den connectionIds heraus und exkludiert alle groups:
-        return connections.filter(connection => connectionIds.includes(connection.id));// && connection.groupName == ''
-      }),
-      map(connections => {
-        console.log('inside user service, selectConnectionIdByFriendId(connectionIds: any, friendId: string): alle friends-connections', connections);
-        //filtert aus allen friends-connections diejenige der friendId heraus:
-        return connections.filter(connection => connection.users === friendId);
-        //if connection is friend not group: connection.users is a string not an array
+                //checken, ob groups wirklich ausgefiltert werden:
+        return connections.filter(connection => connection.users.includes(friendId) && connection.groupName == '');
       })
     );
   }
@@ -139,18 +139,14 @@ export class UserService {
     const connectionsRef = collection(this.firestore, 'connections'); //Referenz zur Collection 'Connections'
     const users = [requestingUserId, currentUserId]; // Ids der requesting und requested User als Array-Variable 'users'
     const promises = [];
-    return addDoc(connectionsRef,{ 
+    return addDoc(connectionsRef, { 
         createdAt: serverTimestamp(), 
         groupName: '', 
         users }).then(res =>{ //erstellt eine neue Connection
-      console.log('created connection: ', res);                 // mit date, groupName und user
-      const connectionId = res.id;                  //holt sich die Connections Id in die Variable 'connectionId'
-      console.log('connectionId: ;', connectionId)
-      //const promises = [];
-      for (let user of users) { //geht durch die User (userIds) im neuen connection-document
-        console.log('user of users: ', user);
-         const userRef = doc(this.firestore, `users/${user}`); //referenziert die Collection 'users'
-         if(user == currentUserId) { //für den requested user (currentUser);
+        for (let user of users) { //geht durch die User (userIds) im neuen connection-document
+          console.log('user of users: ', user);
+          const userRef = doc(this.firestore, `users/${user}`); //referenziert die Collection 'users'
+          if(user == currentUserId) { //für den requested user (currentUser);
             updateDoc(userRef, {  
               //friends: arrayUnion(requestingUserId), //fügt den requesting user zum Array-Feld 'friends' hinzu
               receivedConnectionRequests: '' //muss später als Array behandelt werden: requestingUserId aus dem Array heraus nehmen!!
@@ -161,7 +157,7 @@ export class UserService {
               sentConnectionRequests: '' //muss später als Array behandelt werden: currentUserId aus dem Array heraus nehmen!!
             });
           }
-      }    
+        }    
       return Promise.all(promises);
     });
   }

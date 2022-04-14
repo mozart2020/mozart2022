@@ -8,7 +8,7 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./add-connection-modal.page.scss'],
 })
 export class AddConnectionModalPage implements OnInit {
-  @Input() connectionIds: any;
+  @Input() friendIds: any;
   notConnectedUsers=[];
   selectedUserId: string = '';
   selectedUserDisplayedString: string = '';
@@ -20,7 +20,7 @@ export class AddConnectionModalPage implements OnInit {
 
   ngOnInit() {
     //all users - friends excluded
-    this.userService.getUsersExcludedByConnectionIds(this.connectionIds).subscribe(res => {
+    this.userService.getUsersExcludedByUserIds(this.friendIds).subscribe(res => {
       this.notConnectedUsers = res;
     })
   }

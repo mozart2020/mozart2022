@@ -2,6 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
+import { LessonService } from 'src/app/services/lesson.service';
+import { FriendConnections } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-choose-teacher-modal',
@@ -15,17 +17,21 @@ export class ChooseTeacherModalPage implements OnInit {
   @Input() videoLocalUrl: string;
 
   friendIds = [];
+  friendConnections: FriendConnections;
   friends = [];
   groups = [];
   publicTeachers = [];
 
-  selectedUserId = '';
-  selectedGroupId = ''; //TO DO
-  selectedUserDisplayedString = '';
+  selectedFriendId = '';
+  selectedFriendDisplayedString = '';
+  selectedFriendConnectionId = '';
+
+  selectedGroupId = ''; //TO DO  
 
   constructor(
     private authService: AuthService,
-    private userService: UserService, 
+    private userService: UserService,
+    private lessonService: LessonService,
     private modalCtrl: ModalController
   ) { }
 
@@ -40,42 +46,48 @@ export class ChooseTeacherModalPage implements OnInit {
     this.userService.getCurrentUserConnections().subscribe(res => { //lädt alle connections des current users
       res.forEach(value => { //geht durch alle geladenen connections durch
         if (value.groupName == '') {      //filtert alle groups weg, friendships bleiben übrig
-          const users = value.users;      //holt sich die user ids als Array
+          const users = value.users;
+          console.log('INSIDE getFriends(): connection id', value.id, 'connection users: ', value.users)     
+          //holt sich die friend ids als Array:
           users.forEach(id => {
             this.friendIds.push(id);
-            console.log('current value of friendIds: ', this.friendIds);
           });
         }
-      });               ///CHEK AND TO DO - IS'NT IT GET USERS BY FRIENDS IDS????:
-      this.userService.getUsersByConnectionIds(this.friendIds).subscribe(res => {
+      });
+      this.userService.getUsersByUserIds(this.friendIds).subscribe(res => {
         this.friends = res;
-        console.log('friends: ', res); //CHECKEN WIE MAN DAS ASYNCHRON HINKRIEGT
+        console.log('friends INSIDE getUsersByUserIds(this.friendIds): ', res); //CHECKEN WIE MAN DAS ASYNCHRON HINKRIEGT
       });
     })
   }
 
+  //MODAL SECTION:
   close() {
     this.modalCtrl.dismiss();
   }
-  selectUser() {
-    this.userService.selectConnectionIdByFriendId(this.friendIds, this.selectedUserId).subscribe(res => {
-      console.log('SHOULD BE CONNECTION ID OF SELECTED USER', res);
+  
+  selectFriend() { //called by clicking button "Ask friend for feedback"
+    this.userService.getConnectionByFriendId(this.selectedFriendId).subscribe(res => {
+      console.log('Current info inside choose-teacher-modal', res);
+      res.forEach(value => this.selectedFriendConnectionId = value.id);
+      console.log('dummy addLesson with connectionId inside subscribe', this.selectedFriendConnectionId);
     });
+
 
    /* this.modalCtrl.dismiss({
       user: { id: this.selectedUserId }
     }); */
   }
-  selectUserName(userName, userEmail) {
-    console.log('user name : ', userName, 'user email: ', userEmail);
-    this.selectedUserDisplayedString = userName;
-    if(this.selectedUserDisplayedString == '') {
-      this.selectedUserDisplayedString = userEmail;
+  selectFriendName(friendName: string, friendEmail: string) {
+    console.log('friend name : ', friendName, 'friend email: ', friendEmail);
+    this.selectedFriendDisplayedString = friendName;
+    if(this.selectedFriendDisplayedString == '') {
+      this.selectedFriendDisplayedString = friendEmail;
     }
   }
-  userChange(event) {
-    console.log("userChange test", event.detail.value);
-    this.selectedUserId = event.detail.value;
+  friendChange(event: any) {
+    console.log("friendChange test", event.detail.value);
+    this.selectedFriendId = event.detail.value;
   }
 
 }
