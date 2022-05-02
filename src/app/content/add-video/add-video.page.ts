@@ -88,7 +88,7 @@ export class AddVideoPage implements OnInit {
       ///init Video Player, Capacitor video pleyer requires base64:
       const base64dataUrl = await this.videoService.getVideoBase64Url(this.videoLocalUrl);
       console.log('video player: ', base64dataUrl);
-      // Show player emebdded
+      // Show player embedded
     await this.videoPlayer.initPlayer({
         mode: 'embedded',
         url: base64dataUrl,
@@ -164,6 +164,7 @@ export class AddVideoPage implements OnInit {
       this.length,          //length
       this.videoLocalUrl,   //videoLocalUrl => local device storage
       '');                  //videoUrl => backend storage (https), updated after video upload
+      this.uploadVideo();
     this.router.navigateByUrl('home/content', {replaceUrl: true});
   }
   async openChooseTeacher(formValue: any) {
@@ -181,9 +182,7 @@ export class AddVideoPage implements OnInit {
       cssClass: 'transparent-modal' //ToDo: Check this class (global.scss)
     });
     modal.present();
-
   }
-
   
   //Upload section:
   async uploadVideo() {
@@ -208,12 +207,11 @@ export class AddVideoPage implements OnInit {
           if (res['success']) {
               this.presentToast('Video upload complete.');
               this.videoService.updateVideoUrl(this.videoId, `https://backend.mozart.gives/uploads/${fileName}`);
-              console.log('video url created bei updateVideoUrl(): ', `https://backend.mozart.gives/uploads/${fileName}`)
+              console.log('video url created bei updateVideoUrl(): ', `https://backend.mozart.gives/uploads/${fileName}`, 'videoId: ', this.videoId);
           } else {
               this.presentToast('Video upload failed.');
           }
       });
   }
-
 
 }

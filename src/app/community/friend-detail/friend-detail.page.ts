@@ -68,8 +68,8 @@ export class FriendDetailPage implements OnInit {
           const users = value.users;      //holt sich die user ids als Array
           users.forEach(id => {
             if(id == this.friendId) {
-              this.connectionId = value.connectionId;
-              console.log(this.connectionId);
+              console.log(value);
+              this.connectionId = value.id;
             }
           });
         }
