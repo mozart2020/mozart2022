@@ -1,0 +1,6 @@
+{
+	"appId": "gives.mozart.app",
+	"appName": "mozartTest",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}
